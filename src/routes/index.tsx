@@ -582,7 +582,7 @@ function Index() {
                 </p>
               </a>
               <a
-                href="https://linkedin.com/in/developergeekay"
+                href="https://linkedin.com/in/developer-geekay"
                 target="_blank"
                 rel="noreferrer"
                 className="border border-border p-5 hover:border-brand/40 transition-colors group"
@@ -620,3 +620,5 @@ function Index() {
     </div>
   );
 }
+
+export default Index;
