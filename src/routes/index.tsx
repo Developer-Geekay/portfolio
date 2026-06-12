@@ -324,24 +324,152 @@ function useScrollProgress() {
   return progress;
 }
 
-function useScrollReveal(enabled: boolean) {
+// ── Scan-line animation helpers ──────────────────────────────────────────────
+const SCAN_MS = 550;
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%►▣╳≡≢▶";
+
+function injectScanLine(el: HTMLElement, delay: number) {
+  setTimeout(() => {
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 10 || rect.height < 10) return;
+
+    const line = document.createElement("div");
+    line.style.cssText = [
+      "position:fixed",
+      `top:${rect.top}px`,
+      `left:${rect.left}px`,
+      `height:${rect.height}px`,
+      "width:2px",
+      "background:linear-gradient(to bottom,transparent,#e2ff66 15%,#e2ff66 85%,transparent)",
+      "box-shadow:0 0 14px 5px rgba(226,255,102,0.65)",
+      "pointer-events:none",
+      `z-index:9999`,
+      `transition:transform ${SCAN_MS}ms cubic-bezier(0.77,0,0.18,1),opacity 200ms ease`,
+      "will-change:transform",
+    ].join(";");
+
+    document.body.appendChild(line);
+
+    // Double rAF to force paint before animating
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        line.style.transform = `translateX(${rect.width}px)`;
+      });
+    });
+
+    setTimeout(() => {
+      line.style.opacity = "0";
+      setTimeout(() => line.parentNode?.removeChild(line), 250);
+    }, SCAN_MS + 60);
+  }, delay);
+}
+
+function scrambleText(el: HTMLElement, delay: number) {
+  const original = el.textContent ?? "";
+  if (!original.trim()) return;
+
+  setTimeout(() => {
+    let frame = 0;
+    const total = 22;
+    const tick = () => {
+      frame++;
+      const progress = frame / total;
+      el.textContent = original
+        .split("")
+        .map((ch, i) => {
+          if (/[\s._\-/()\[\]]/.test(ch)) return ch;
+          if (i / original.length < progress) return original[i];
+          return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        })
+        .join("");
+      if (frame < total) requestAnimationFrame(tick);
+      else el.textContent = original;
+    };
+    requestAnimationFrame(tick);
+  }, delay);
+}
+
+// ── StatCounter — counts 0 → value on scroll-reveal ─────────────────────────
+function StatCounter({
+  value,
+  suffix,
+  revealReady,
+}: {
+  value: number;
+  suffix: string;
+  revealReady: boolean;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [count, setCount] = useState(0);
+  const [showSuffix, setShowSuffix] = useState(false);
+
   useEffect(() => {
-    if (!enabled) return;
-    const els = document.querySelectorAll("[data-reveal]");
+    if (!revealReady) return;
+    const el = ref.current;
+    if (!el) return;
     const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("revealed");
-            obs.unobserve(e.target);
-          }
-        });
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        obs.disconnect();
+        // Start after parent scan-reveal completes
+        setTimeout(() => {
+          const start = performance.now();
+          const duration = 900;
+          const tick = (now: number) => {
+            const t = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            setCount(Math.round(eased * value));
+            if (t < 1) requestAnimationFrame(tick);
+            else {
+              setCount(value);
+              setShowSuffix(true);
+            }
+          };
+          requestAnimationFrame(tick);
+        }, SCAN_MS + 80);
       },
-      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.5 }
     );
-    els.forEach((el) => obs.observe(el));
+    obs.observe(el);
     return () => obs.disconnect();
-  }, [enabled]);
+  }, [revealReady, value]);
+
+  return (
+    <p ref={ref} className="text-2xl font-bold font-display text-brand leading-none">
+      {count}
+      <span
+        className={`transition-opacity duration-300 ${showSuffix ? "opacity-100" : "opacity-0"}`}
+      >
+        {suffix}
+      </span>
+    </p>
+  );
+}
+
+// ── setupScrollReveal — called once after loader exits ───────────────────────
+function setupScrollReveal() {
+  const obs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        const cssDelay = parseInt(el.dataset.delay ?? "0");
+
+        el.classList.add("revealed");
+        obs.unobserve(el);
+
+        injectScanLine(el, cssDelay);
+
+        el.querySelectorAll<HTMLElement>("[data-scramble]").forEach((h) => {
+          scrambleText(h, cssDelay + SCAN_MS - 60);
+        });
+      });
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+  );
+  document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) =>
+    obs.observe(el)
+  );
 }
 
 function useActiveSection(ids: string[]) {
@@ -371,13 +499,13 @@ function Index() {
   const [showLoader, setShowLoader] = useState(true);
   const [contentVisible, setContentVisible] = useState(false);
   const [revealReady, setRevealReady] = useState(false);
-  useScrollReveal(revealReady);
 
   const handleLoaderComplete = () => {
     setContentVisible(true);
     setTimeout(() => {
       setShowLoader(false);
       setRevealReady(true);
+      setupScrollReveal();
     }, 600);
   };
 
@@ -502,7 +630,7 @@ function Index() {
             <div className="lg:col-span-4" data-reveal>
               <div className="flex items-center gap-3 mb-4">
                 <div className="size-2 bg-brand glow-sm" />
-                <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                <h2 data-scramble className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
                   README.md
                 </h2>
               </div>
@@ -511,19 +639,19 @@ function Index() {
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="border border-border p-4 bg-surface/30 hover:border-brand/30 transition-colors">
-                  <p className="text-2xl font-bold font-display text-brand leading-none">8+</p>
+                  <StatCounter value={8} suffix="+" revealReady={revealReady} />
                   <p className="text-[10px] text-muted tracking-widest uppercase mt-2">Years_Exp</p>
                 </div>
                 <div className="border border-border p-4 bg-surface/30 hover:border-brand/30 transition-colors">
-                  <p className="text-2xl font-bold font-display text-brand leading-none">5×</p>
+                  <StatCounter value={5} suffix="×" revealReady={revealReady} />
                   <p className="text-[10px] text-muted tracking-widest uppercase mt-2">OS_Certified</p>
                 </div>
                 <div className="border border-border p-4 bg-surface/30 hover:border-brand/30 transition-colors">
-                  <p className="text-2xl font-bold font-display text-brand leading-none">7</p>
+                  <StatCounter value={7} suffix="" revealReady={revealReady} />
                   <p className="text-[10px] text-muted tracking-widest uppercase mt-2">Companies</p>
                 </div>
                 <div className="border border-border p-4 bg-surface/30 hover:border-brand/30 transition-colors">
-                  <p className="text-2xl font-bold font-display text-brand leading-none">2</p>
+                  <StatCounter value={2} suffix="" revealReady={revealReady} />
                   <p className="text-[10px] text-muted tracking-widest uppercase mt-2">Countries</p>
                 </div>
               </div>
@@ -552,7 +680,7 @@ function Index() {
         <section id="projects" className="max-w-7xl mx-auto px-4 sm:px-6 mb-24 sm:mb-32">
           <div className="flex items-center gap-4 mb-10" data-reveal>
             <div className="size-2 bg-brand glow-sm shrink-0" />
-            <h2 className="text-base sm:text-xl font-bold uppercase tracking-widest whitespace-nowrap">
+            <h2 data-scramble className="text-base sm:text-xl font-bold uppercase tracking-widest whitespace-nowrap">
               Deployment_Logs
             </h2>
             <div className="h-px flex-1 bg-border" />
@@ -620,7 +748,7 @@ function Index() {
             <div className="lg:col-span-8 border border-border p-6 sm:p-8 bg-surface/20" data-reveal>
               <div className="flex items-center gap-3 mb-10">
                 <div className="size-2 bg-brand glow-sm" />
-                <h2 className="text-base sm:text-xl font-bold uppercase tracking-widest">
+                <h2 data-scramble className="text-base sm:text-xl font-bold uppercase tracking-widest">
                   Career_History.log
                 </h2>
               </div>
@@ -799,7 +927,7 @@ function Index() {
                 <span className="size-1.5 rounded-full bg-brand animate-pulse" />
                 PINGING_NETWORK...
               </div>
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-display font-bold mb-8 tracking-tighter">
+              <h2 data-scramble className="text-3xl sm:text-5xl md:text-6xl font-display font-bold mb-8 tracking-tighter">
                 INITIATE_COLLABORATION_
               </h2>
               <a
