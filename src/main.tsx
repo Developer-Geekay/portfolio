@@ -1,10 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './styles.css'
-import Index from './routes/index'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./styles.css";
+import { RouterProvider } from "@tanstack/react-router";
+import { getRouter } from "./router";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const router = getRouter();
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Index />
-  </React.StrictMode>
-)
+    <RouterProvider router={router} />
+  </React.StrictMode>,
+);
