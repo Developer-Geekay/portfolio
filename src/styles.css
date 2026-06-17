@@ -38,8 +38,8 @@
   --radius-lg: 6px;
   --radius-xl: 8px;
 
-  --shadow-glow-sm: 0 0 8px rgba(226, 255, 102, 0.4);
-  --shadow-glow-lg: 0 0 24px rgba(226, 255, 102, 0.25);
+  --shadow-glow-sm: 0 0 8px color-mix(in srgb, var(--brand) 40%, transparent);
+  --shadow-glow-lg: 0 0 24px color-mix(in srgb, var(--brand) 25%, transparent);
 }
 
 :root {
@@ -85,10 +85,10 @@
 }
 
 @utility glow-sm {
-  filter: drop-shadow(0 0 8px rgba(226, 255, 102, 0.4));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--brand) 40%, transparent));
 }
 @utility glow-lg {
-  filter: drop-shadow(0 0 20px rgba(226, 255, 102, 0.2));
+  filter: drop-shadow(0 0 20px color-mix(in srgb, var(--brand) 20%, transparent));
 }
 @utility font-display {
   font-family: var(--font-display);

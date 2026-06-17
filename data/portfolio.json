@@ -1,0 +1,431 @@
+{
+  "header": {
+    "logoText": ">_ GK",
+    "timezone": "Asia/Riyadh",
+    "timeLabel": "RIYAD",
+    "nodeLabel": "RIYAD_NODE_01",
+    "bootNode": "RIYAD_01"
+  },
+  "profile": {
+    "name": "Gokula Kannan",
+    "role": "Technical Architect",
+    "location": "Riyadh, KSA",
+    "timezone": "Asia/Riyadh",
+    "availability": "AVAILABLE",
+    "about": [
+      "Technical Architect with 8+ years designing and delivering enterprise-grade applications across banking, financial services, insurance and digital transformation initiatives.",
+      "Specialized in OutSystems architecture, enterprise integrations, mobile solutions, and full-stack development - with proven expertise in solution design, performance optimization, and technical leadership.",
+      "Recognized for leading complex initiatives under tight deadlines, mentoring engineering teams, and translating business requirements into scalable technical solutions that drive measurable outcomes."
+    ],
+    "stats": [
+      {
+        "label": "Years_Exp",
+        "value": 8,
+        "suffix": "+"
+      },
+      {
+        "label": "OS_Certified",
+        "value": 5,
+        "suffix": "x"
+      },
+      {
+        "label": "Companies",
+        "value": 7,
+        "suffix": ""
+      },
+      {
+        "label": "Countries",
+        "value": 2,
+        "suffix": ""
+      }
+    ]
+  },
+  "hero": {
+    "line1": "TECHNICAL / ARCHITECT",
+    "line2": "OUTSYSTEMS / SPECIALIST",
+    "typewriter": {
+      "lines": [
+        "TECHNICAL / ARCHITECT",
+        "OUTSYSTEMS / SPECIALIST",
+        "FULL STACK / DEVELOPER"
+      ],
+      "speedMs": 72,
+      "linePauseMs": 80
+    },
+    "command": "$ identity --fetch --role=\"Technical Architect\"",
+    "introLines": [
+      "> Initializing OutSystems core...",
+      "> Architecting fintech & banking platforms...",
+      "> Mentoring engineering teams since 2015."
+    ],
+    "badges": [
+      {
+        "label": "STATUS: AVAILABLE",
+        "tone": "brand"
+      },
+      {
+        "label": "LOC: RIYADH_KSA",
+        "tone": "muted"
+      },
+      {
+        "label": "EXP: 8+_YEARS",
+        "tone": "muted"
+      },
+      {
+        "label": "CERT: 5x_OUTSYSTEMS",
+        "tone": "muted"
+      }
+    ],
+    "primaryActionLabel": "> Initiate Contact",
+    "secondaryActionLabel": "./view_projects",
+    "cvLabel": "Download_CV"
+  },
+  "projects": [
+    {
+      "id": "enterprise-digital-platform",
+      "code": "FINTECH.SYS",
+      "title": "Enterprise Digital Platform",
+      "client": "Riyad Capital",
+      "year": "2025",
+      "blurb": "Large-scale OutSystems platform. Led integrations with Regula, FACEKI, HyperPay and custom native mobile plugins.",
+      "imageKey": "banking",
+      "tags": [
+        "OutSystems O11",
+        "Cordova",
+        "HyperPay"
+      ],
+      "link": "",
+      "featured": true,
+      "sortOrder": 10
+    },
+    {
+      "id": "outsystems-devtools",
+      "code": "DEVTOOLS.EXT",
+      "title": "OutSystems DevTools",
+      "client": "Community / OSS",
+      "year": "2024",
+      "blurb": "Chrome extension for OutSystems developers, rebuilt in React: runtime inspection, network monitoring, mock rule engine.",
+      "imageKey": "devtools",
+      "tags": [
+        "React",
+        "Chrome API",
+        "OSS"
+      ],
+      "link": "https://github.com/developergeekay",
+      "featured": true,
+      "sortOrder": 20
+    },
+    {
+      "id": "dealer-award-systems",
+      "code": "BENTLEY.MOT",
+      "title": "Dealer Award Systems",
+      "client": "Bentley Motors",
+      "year": "2024",
+      "blurb": "End-to-end solution architecture and implementation for Bentley's global dealer recognition program.",
+      "imageKey": "bentley",
+      "tags": [
+        "Architecture",
+        "OutSystems",
+        "Enterprise"
+      ],
+      "link": "",
+      "featured": true,
+      "sortOrder": 30
+    },
+    {
+      "id": "first-notice-of-loss",
+      "code": "FNOL.INS",
+      "title": "First Notice of Loss",
+      "client": "Insurance Enterprise",
+      "year": "2023",
+      "blurb": "Contributed to architecture of an enterprise insurance claim management platform handling end-to-end FNOL flows.",
+      "imageKey": "fnol",
+      "tags": [
+        "Insurance",
+        "Data Modeling",
+        "Mobile"
+      ],
+      "link": "",
+      "featured": true,
+      "sortOrder": 40
+    }
+  ],
+  "experience": [
+    {
+      "id": "01",
+      "role": "Technical Architect",
+      "company": "Riyad Capital",
+      "location": "Riyadh, KSA",
+      "period": "2025 - PRESENT",
+      "current": true,
+      "bullets": [
+        "Leading architecture and delivery of the Enterprise Digital Platform.",
+        "Designed scalable architecture covering UI, integrations and reusable modules.",
+        "Delivered POCs for Regula, FACEKI and HyperPay integrations.",
+        "Authored custom Cordova plugins wrapping native SDKs into OutSystems.",
+        "Stabilized critical pre-production releases under aggressive timelines."
+      ],
+      "sortOrder": 10
+    },
+    {
+      "id": "02",
+      "role": "Technical Architect",
+      "company": "Onward Technologies Limited",
+      "location": "Chennai, IN",
+      "period": "2023 - 2024",
+      "current": false,
+      "bullets": [
+        "Architectural leadership for enterprise initiatives.",
+        "Led solution design for Bentley Motors Dealer Award Systems.",
+        "Guided teams on architecture standards and deployment practices."
+      ],
+      "sortOrder": 20
+    },
+    {
+      "id": "03",
+      "role": "Senior Software Engineer",
+      "company": "Mphasis",
+      "location": "Chennai, IN",
+      "period": "2022 - 2023",
+      "current": false,
+      "bullets": [
+        "Redesigned data models and queries for a 53% performance improvement.",
+        "Mentored engineers and accelerated onboarding.",
+        "Supported architecture of the FNOL insurance platform."
+      ],
+      "sortOrder": 30
+    },
+    {
+      "id": "04",
+      "role": "Senior Software Engineer",
+      "company": "Netlink Software Group America",
+      "location": "Chennai, IN",
+      "period": "2021 - 2022",
+      "current": false,
+      "bullets": [
+        "Delivered major initiatives for Riyad Bank and Riyad Capital.",
+        "Built secure banking and investment applications.",
+        "Owned code reviews and release management."
+      ],
+      "sortOrder": 40
+    },
+    {
+      "id": "05",
+      "role": "Software Engineer",
+      "company": "Netlink Software Group America",
+      "location": "Chennai, IN",
+      "period": "2019 - 2021",
+      "current": false,
+      "bullets": [
+        "Delivered the Qualified Candidate Database recruitment platform.",
+        "Designed API-centric, scalable application components.",
+        "Coordinated enterprise deployments."
+      ],
+      "sortOrder": 50
+    },
+    {
+      "id": "06",
+      "role": "Web Developer",
+      "company": "Hexlope Technologies",
+      "location": "Chennai, IN",
+      "period": "2018 - 2019",
+      "current": false,
+      "bullets": [
+        "Developed cloud migration and visualization solutions.",
+        "Built responsive web applications using modern JavaScript."
+      ],
+      "sortOrder": 60
+    },
+    {
+      "id": "07",
+      "role": "Web Developer",
+      "company": "Teamwork Techknowledge",
+      "location": "Chennai, IN",
+      "period": "2015 - 2017",
+      "current": false,
+      "bullets": [
+        "Delivered e-commerce and service marketplace applications.",
+        "Integrated secure payment gateways and backend systems."
+      ],
+      "sortOrder": 70
+    }
+  ],
+  "stack": [
+    {
+      "id": "low-code-platforms",
+      "label": "Low-Code Platforms",
+      "items": [
+        "OutSystems O11",
+        "OutSystems Developer Cloud"
+      ],
+      "sortOrder": 10
+    },
+    {
+      "id": "front-end",
+      "label": "Front-End",
+      "items": [
+        "React",
+        "Angular",
+        "JavaScript",
+        "HTML5 / CSS3",
+        "Angular Material"
+      ],
+      "sortOrder": 20
+    },
+    {
+      "id": "back-end-data",
+      "label": "Back-End & Data",
+      "items": [
+        "Node.js",
+        "SQL",
+        "MySQL",
+        "MongoDB"
+      ],
+      "sortOrder": 30
+    },
+    {
+      "id": "mobile",
+      "label": "Mobile",
+      "items": [
+        "Cordova",
+        "Native SDK Integrations"
+      ],
+      "sortOrder": 40
+    },
+    {
+      "id": "devops-infra",
+      "label": "DevOps & Infra",
+      "items": [
+        "Git",
+        "Bitbucket",
+        "AWS",
+        "Apache",
+        "Nginx",
+        "Jira"
+      ],
+      "sortOrder": 50
+    }
+  ],
+  "certifications": [
+    {
+      "id": "tech-lead-o11",
+      "title": "OutSystems Tech Lead (O11)",
+      "sortOrder": 10
+    },
+    {
+      "id": "frontend-specialist",
+      "title": "Front-end Developer Specialist (O11 & ODC)",
+      "sortOrder": 20
+    },
+    {
+      "id": "associate-odc",
+      "title": "Associate Developer (ODC)",
+      "sortOrder": 30
+    },
+    {
+      "id": "mobile-specialist",
+      "title": "Mobile Developer Specialist (O11 & ODC)",
+      "sortOrder": 40
+    },
+    {
+      "id": "associate-reactive",
+      "title": "Associate Reactive Developer",
+      "sortOrder": 50
+    },
+    {
+      "id": "angular-complete-guide",
+      "title": "Angular - The Complete Guide",
+      "sortOrder": 60
+    },
+    {
+      "id": "neutrinos-certified",
+      "title": "Neutrinos Certified Professional Developer",
+      "sortOrder": 70
+    }
+  ],
+  "proficiency": [
+    {
+      "id": "outsystems-o11",
+      "label": "OUTSYSTEMS_O11",
+      "value": 98,
+      "sortOrder": 10
+    },
+    {
+      "id": "enterprise-architecture",
+      "label": "ENTERPRISE_ARCHITECTURE",
+      "value": 94,
+      "sortOrder": 20
+    },
+    {
+      "id": "mobile-integrations",
+      "label": "MOBILE_INTEGRATIONS",
+      "value": 90,
+      "sortOrder": 30
+    },
+    {
+      "id": "react-frontend",
+      "label": "REACT / FRONTEND",
+      "value": 88,
+      "sortOrder": 40
+    },
+    {
+      "id": "node-backend",
+      "label": "NODE / BACKEND",
+      "value": 82,
+      "sortOrder": 50
+    }
+  ],
+  "education": {
+    "degree": "Master of Computer Applications (MCA)",
+    "institution": "Jaya College of Arts & Science",
+    "period": "2015 - 2017"
+  },
+  "awards": [
+    {
+      "id": "laurel-award",
+      "title": "Laurel Award",
+      "issuer": "Mphasis",
+      "sortOrder": 10
+    },
+    {
+      "id": "best-team-player",
+      "title": "Best Team Player Award",
+      "issuer": "Neutrinos",
+      "sortOrder": 20
+    }
+  ],
+  "languages": [
+    {
+      "id": "tamil",
+      "name": "Tamil",
+      "level": "Native",
+      "sortOrder": 10
+    },
+    {
+      "id": "english",
+      "name": "English",
+      "level": "Professional",
+      "sortOrder": 20
+    },
+    {
+      "id": "arabic",
+      "name": "Arabic",
+      "level": "Elementary",
+      "sortOrder": 30
+    }
+  ],
+  "contact": {
+    "email": "developergeekay@gmail.com",
+    "phone": "+966 50 330 3578",
+    "linkedinUrl": "https://linkedin.com/in/developer-geekay",
+    "linkedinLabel": "/in/developergeekay",
+    "githubUrl": "https://github.com/developergeekay",
+    "githubLabel": "/developergeekay"
+  },
+  "seo": {
+    "title": "Gokula Kannan - Technical Architect | OutSystems",
+    "description": "Technical Architect with 8+ years across banking, fintech and insurance. 5x OutSystems certified. Based in Riyadh, Saudi Arabia.",
+    "ogTitle": "Gokula Kannan - Technical Architect",
+    "ogDescription": "Enterprise OutSystems architect. Banking, fintech, mobile, full-stack. Based in Riyadh."
+  }
+}
