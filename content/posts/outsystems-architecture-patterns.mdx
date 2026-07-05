@@ -1,0 +1,56 @@
+---
+title: "OutSystems Architecture Patterns I Use on Every Project"
+date: "2026-01-15"
+slug: "outsystems-architecture-patterns"
+tags: ["OutSystems", "Architecture", "Best Practices"]
+excerpt: "After 8+ years building enterprise platforms on OutSystems, here are the patterns I reach for on every new project."
+published: true
+---
+
+# OutSystems Architecture Patterns I Use on Every Project
+
+After 8+ years designing enterprise platforms on OutSystems — from Riyad Capital's digital banking platform to Bentley Motors' global dealer systems — I've settled on a core set of architectural patterns that apply to nearly every project.
+
+## 1. The Service-Abstraction Layer
+
+The biggest mistake I see in OutSystems projects is coupling the UI directly to integration logic. Instead, I always introduce a Service Layer (a set of Service Actions) that sits between screens and the actual REST/SOAP integrations.
+
+```
+Screen → Service Action → Integration Action → External API
+```
+
+**Why it matters:** When FACEKI updates their SDK or HyperPay changes an endpoint, I only update the Integration Action — the screens are untouched. This saved us weeks during the Riyad Capital platform stabilization.
+
+## 2. Module Dependency Direction
+
+Always enforce a strict one-way dependency flow:
+
+```
+Foundation Modules → Core Modules → End-User Modules
+```
+
+Never let a Foundation module reference a Core module. It sounds obvious, but it becomes a real problem at scale when you have 50+ modules and complex teams.
+
+## 3. Offline-First Mobile Architecture
+
+For OutSystems mobile apps, assume the network is hostile. Structure data sync with:
+
+1. **Local storage first** — all operations write locally
+2. **Sync queue** — pending operations persisted in a client-side table
+3. **Background sync** — timer-based sync trigger, not on-demand
+4. **Conflict resolution** — server wins by default; document exceptions explicitly
+
+This pattern handled everything we threw at it during the mobile rollout at Riyad Capital, including edge cases with intermittent 4G in elevator lobbies.
+
+## 4. Centralised Error Handling
+
+Create a single `Error_Handler` Service Action that:
+- Logs to a central error table
+- Sends an alert for P1 errors
+- Returns a typed error result (never throws)
+
+Every integration and business logic action calls it. Never scatter `ExceptionHandler` blocks across modules.
+
+---
+
+These four patterns alone have saved more debugging hours than I can count. Happy to go deeper on any of them — reach out via LinkedIn.

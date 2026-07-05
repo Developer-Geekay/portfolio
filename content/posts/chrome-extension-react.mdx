@@ -1,0 +1,70 @@
+---
+title: "Building the OutSystems DevTools Chrome Extension in React"
+date: "2026-03-01"
+slug: "chrome-extension-react"
+tags: ["React", "Chrome API", "OSS", "DevTools"]
+excerpt: "How I rebuilt the OutSystems DevTools extension from vanilla JS to React — the architecture decisions and lessons learned."
+published: true
+---
+
+# Building the OutSystems DevTools Chrome Extension in React
+
+The OutSystems DevTools Chrome extension started as a quick utility I built in vanilla JS to inspect module state at runtime. It grew. Eventually the codebase was unwieldy, so I rebuilt it from scratch in React.
+
+## The Architecture Problem
+
+A Chrome extension has multiple isolated JS contexts:
+
+- **Service Worker** (background) — persistent state, message routing
+- **Content Script** — injected into the page, access to DOM
+- **DevTools Panel** — the UI you see in Chrome DevTools
+- **Popup** — the small panel from the toolbar icon
+
+These contexts **cannot share memory**. Communication is entirely message-passing via `chrome.runtime.sendMessage` and `chrome.tabs.sendMessage`.
+
+## The Solution: A Message Bus
+
+I built a typed message bus:
+
+```typescript
+type Message =
+  | { type: "INSPECT_MODULE"; moduleId: string }
+  | { type: "NETWORK_REQUEST"; payload: RequestPayload }
+  | { type: "MOCK_RULE_ADDED"; rule: MockRule };
+
+function sendToDevTools(message: Message) {
+  chrome.runtime.sendMessage(message);
+}
+```
+
+The React DevTools panel subscribes to these messages via a custom hook:
+
+```typescript
+function useExtensionMessages<T extends Message>(type: T["type"]) {
+  const [messages, setMessages] = useState<T[]>([]);
+  useEffect(() => {
+    const handler = (msg: Message) => {
+      if (msg.type === type) setMessages((prev) => [...prev, msg as T]);
+    };
+    chrome.runtime.onMessage.addListener(handler);
+    return () => chrome.runtime.onMessage.removeListener(handler);
+  }, [type]);
+  return messages;
+}
+```
+
+Clean, typed, and React-friendly.
+
+## The Mock Rule Engine
+
+The most useful feature is the mock rule engine — you can intercept OutSystems REST calls and return test data without touching the server. It uses the Chrome DevTools Protocol's `Network.setRequestInterception` under the hood.
+
+The UI for this was the hardest part: a visual rule builder that needed to feel fast and not fight the monospace aesthetic.
+
+## Lessons Learned
+
+1. **HMR doesn't work in extensions** — you need to reload the extension on every change. Build a watch script that auto-reloads.
+2. **Service workers die after 30 seconds of inactivity** — use `chrome.alarms` to keep state alive.
+3. **React DevTools inspect your extension** — use the production build even during development to avoid this noise.
+
+The extension is open-source at [github.com/developergeekay](https://github.com/developergeekay).
