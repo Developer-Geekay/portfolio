@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
     return [
       // /assistant → the static Vite build in public/assistant/
       { source: "/assistant", destination: "/assistant/index.html" },
+      // admin dashboard is a client-side route of the same SPA
+      { source: "/assistant/assistant-admin", destination: "/assistant/index.html" },
       // assistant API calls → FastAPI backend
       {
         source: "/assistant-api/:path*",
