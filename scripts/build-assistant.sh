@@ -6,7 +6,7 @@
 set -euo pipefail
 
 PORTFOLIO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-ASSISTANT_DIR="${ASSISTANT_DIR:-$PORTFOLIO_DIR/../AI/portfolio-assistance/frontend}"
+ASSISTANT_DIR="${ASSISTANT_DIR:-$PORTFOLIO_DIR/../../AI/portfolio-assistance/frontend}"
 
 if [ ! -f "$ASSISTANT_DIR/package.json" ]; then
   echo "Assistant frontend not found at: $ASSISTANT_DIR"
