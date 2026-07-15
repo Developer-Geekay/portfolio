@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
+  const isLoggedIn = !!req.auth?.user;
   const isLoginPath = req.nextUrl.pathname === "/admin/login";
 
   if (!isLoggedIn && !isLoginPath) {

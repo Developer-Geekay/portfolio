@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 // Gokul AI assistant backend (FastAPI) — proxied under /assistant-api so the
 // static assistant app at /assistant stays same-origin (mic + no CORS).
 const ASSISTANT_API_URL =
-  process.env.ASSISTANT_API_URL ?? "http://localhost:16000";
+  process.env.ASSISTANT_API_URL ?? "http://192.168.1.113:16000";
 
 const nextConfig: NextConfig = {
   output: "standalone",
