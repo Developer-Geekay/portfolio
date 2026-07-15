@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   const { slug } = await params;
   const invalid = validateSlug(slug);
   if (invalid) return invalid;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   // unpublished drafts are only visible to the admin session / API key
   if (!post || (!post.published && !(await auth()) && !hasValidApiKey(req))) {
     return NextResponse.json({ message: "Not found." }, { status: 404 });
@@ -41,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
   try {
     const body = await req.json();
     const { content, ...frontmatter } = body as { content: string } & PostFrontmatter;
-    savePost(slug, frontmatter, content ?? "");
+    await savePost(slug, frontmatter, content ?? "");
     revalidatePath("/blog");
     revalidatePath(`/blog/${slug}`);
     return NextResponse.json({ slug });
@@ -59,7 +59,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
   const { slug } = await params;
   const invalid = validateSlug(slug);
   if (invalid) return invalid;
-  deletePost(slug);
+  await deletePost(slug);
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
   return NextResponse.json({ ok: true });

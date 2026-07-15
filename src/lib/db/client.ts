@@ -1,39 +1,21 @@
-import { DatabaseSync } from "node:sqlite";
-import path from "path";
+import mongoose from "mongoose";
 
-const DB_PATH = process.env.DATABASE_URL ?? path.join(process.cwd(), "data", "portfolio.db");
+const MONGODB_URI =
+  process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017/personal-portfolio";
 
 const globalForDb = globalThis as unknown as {
-  _portfolioDb: DatabaseSync | undefined;
+  _mongooseConn: Promise<typeof mongoose> | undefined;
 };
 
-function createDb(): DatabaseSync {
-  const db = new DatabaseSync(DB_PATH);
-  db.exec("PRAGMA journal_mode = WAL");
-  db.exec("PRAGMA foreign_keys = ON");
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS portfolio (
-      id INTEGER PRIMARY KEY NOT NULL,
-      data TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )
-  `);
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS posts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-      slug TEXT NOT NULL UNIQUE,
-      title TEXT NOT NULL,
-      date TEXT NOT NULL,
-      tags TEXT NOT NULL DEFAULT '[]',
-      excerpt TEXT NOT NULL DEFAULT '',
-      content TEXT NOT NULL DEFAULT '',
-      published INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )
-  `);
-  return db;
+export function dbConnect(): Promise<typeof mongoose> {
+  if (!globalForDb._mongooseConn) {
+    globalForDb._mongooseConn = mongoose
+      .connect(MONGODB_URI, { bufferCommands: false })
+      .catch((err) => {
+        // don't cache a failed connection — next call retries
+        globalForDb._mongooseConn = undefined;
+        throw err;
+      });
+  }
+  return globalForDb._mongooseConn;
 }
-
-export const db: DatabaseSync =
-  globalForDb._portfolioDb ?? (globalForDb._portfolioDb = createDb());

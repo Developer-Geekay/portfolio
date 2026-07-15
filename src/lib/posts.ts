@@ -1,4 +1,5 @@
-import { db } from "./db/client";
+import { dbConnect } from "./db/client";
+import { Post as PostModel, type PostDoc } from "./db/schema";
 
 export type PostFrontmatter = {
   title: string;
@@ -13,68 +14,57 @@ export type Post = PostFrontmatter & {
   content: string;
 };
 
-type PostRow = {
-  slug: string;
-  title: string;
-  date: string;
-  tags: string;
-  excerpt: string;
-  content: string;
-  published: number;
-};
-
-function rowToFrontmatter(row: PostRow): PostFrontmatter {
+function toFrontmatter(doc: PostDoc): PostFrontmatter {
   return {
-    slug: row.slug,
-    title: row.title,
-    date: row.date,
-    tags: JSON.parse(row.tags) as string[],
-    excerpt: row.excerpt,
-    published: row.published === 1,
+    slug: doc.slug,
+    title: doc.title,
+    date: doc.date,
+    tags: doc.tags ?? [],
+    excerpt: doc.excerpt ?? "",
+    published: !!doc.published,
   };
 }
 
-export function getAllPosts(includeUnpublished = false): PostFrontmatter[] {
-  const sql = includeUnpublished
-    ? "SELECT slug, title, date, tags, excerpt, published FROM posts ORDER BY date DESC"
-    : "SELECT slug, title, date, tags, excerpt, published FROM posts WHERE published = 1 ORDER BY date DESC";
-  return (db.prepare(sql).all() as PostRow[]).map(rowToFrontmatter);
+export async function getAllPosts(includeUnpublished = false): Promise<PostFrontmatter[]> {
+  await dbConnect();
+  const filter = includeUnpublished ? {} : { published: true };
+  const docs = await PostModel.find(filter, "slug title date tags excerpt published")
+    .sort({ date: -1 })
+    .lean();
+  return docs.map(toFrontmatter);
 }
 
-export function getPostBySlug(slug: string): Post | null {
-  const row = db.prepare("SELECT * FROM posts WHERE slug = ?").get(slug) as PostRow | undefined;
-  if (!row) return null;
-  return { ...rowToFrontmatter(row), content: row.content };
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  await dbConnect();
+  const doc = await PostModel.findOne({ slug }).lean();
+  if (!doc) return null;
+  return { ...toFrontmatter(doc), content: doc.content ?? "" };
 }
 
-export function savePost(slug: string, frontmatter: PostFrontmatter, content: string): void {
-  const now = new Date().toISOString();
-  db.prepare(
-    `INSERT INTO posts (slug, title, date, tags, excerpt, content, published, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(slug) DO UPDATE SET
-       title = excluded.title,
-       date = excluded.date,
-       tags = excluded.tags,
-       excerpt = excluded.excerpt,
-       content = excluded.content,
-       published = excluded.published,
-       updated_at = excluded.updated_at`,
-  ).run(
-    slug,
-    frontmatter.title,
-    frontmatter.date,
-    JSON.stringify(frontmatter.tags ?? []),
-    frontmatter.excerpt ?? "",
-    content,
-    frontmatter.published ? 1 : 0,
-    now,
-    now,
+export async function savePost(
+  slug: string,
+  frontmatter: PostFrontmatter,
+  content: string,
+): Promise<void> {
+  await dbConnect();
+  await PostModel.findOneAndUpdate(
+    { slug },
+    {
+      slug,
+      title: frontmatter.title,
+      date: frontmatter.date,
+      tags: frontmatter.tags ?? [],
+      excerpt: frontmatter.excerpt ?? "",
+      content,
+      published: !!frontmatter.published,
+    },
+    { upsert: true, runValidators: true },
   );
 }
 
-export function deletePost(slug: string): void {
-  db.prepare("DELETE FROM posts WHERE slug = ?").run(slug);
+export async function deletePost(slug: string): Promise<void> {
+  await dbConnect();
+  await PostModel.deleteOne({ slug });
 }
 
 export function readingTime(content: string): string {

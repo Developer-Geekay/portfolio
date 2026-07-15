@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 
-export default function AdminDashboard() {
-  const allPosts = getAllPosts(true);
+export default async function AdminDashboard() {
+  const allPosts = await getAllPosts(true);
   const published = allPosts.filter((p) => p.published).length;
   const drafts = allPosts.length - published;
 

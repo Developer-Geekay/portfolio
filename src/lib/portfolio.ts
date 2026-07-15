@@ -1,7 +1,6 @@
-import { db } from "./db/client";
+import { dbConnect } from "./db/client";
+import { Portfolio } from "./db/schema";
 import { portfolioPageDataSchema, type PortfolioPageData } from "./shared/portfolio.schema";
-
-type PortfolioRow = { id: number; data: string; updated_at: string };
 
 function safeSort<T extends { sortOrder?: number }>(arr: T[]): T[] {
   if (!Array.isArray(arr)) return [];
@@ -9,9 +8,10 @@ function safeSort<T extends { sortOrder?: number }>(arr: T[]): T[] {
 }
 
 export async function getPortfolio(): Promise<PortfolioPageData> {
-  const row = db.prepare("SELECT * FROM portfolio WHERE id = 1").get() as PortfolioRow | undefined;
-  if (!row) throw new Error("Portfolio data not found. Run: npm run db:seed");
-  const data = portfolioPageDataSchema.parse(JSON.parse(row.data));
+  await dbConnect();
+  const doc = await Portfolio.findOne().lean();
+  if (!doc) throw new Error("Portfolio data not found. Run: npm run db:seed");
+  const data = portfolioPageDataSchema.parse(doc.data);
   return {
     ...data,
     projects: safeSort(data.projects),
@@ -26,10 +26,7 @@ export async function getPortfolio(): Promise<PortfolioPageData> {
 
 export async function savePortfolio(input: unknown): Promise<PortfolioPageData> {
   const validated = portfolioPageDataSchema.parse(input);
-  const now = new Date().toISOString();
-  db.prepare(
-    `INSERT INTO portfolio (id, data, updated_at) VALUES (1, ?, ?)
-     ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
-  ).run(JSON.stringify(validated), now);
+  await dbConnect();
+  await Portfolio.findOneAndUpdate({}, { data: validated }, { upsert: true });
   return validated;
 }

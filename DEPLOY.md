@@ -64,12 +64,16 @@ scp -r .next/standalone/* geekay@consoleapi.in:/tmp/portfolio-deploy/
 ssh geekay@consoleapi.in "sudo cp -r /tmp/portfolio-deploy/* /home/gokulakannan/public_html/ && rm -rf /tmp/portfolio-deploy"
 ```
 
-### 3. Copy the database
+### 3. Seed the database
 
-The DB must already exist (seeded locally with `npm run db:seed`):
+The app reads from MongoDB (`MONGODB_URI`). On first deploy, copy the legacy
+SQLite file up and run the migration seed on the server — it copies the
+SQLite data (read-only) into MongoDB, falling back to
+`data/portfolio.json` + `content/posts/` when no SQLite file exists:
 
 ```bash
 scp data/portfolio.db geekay@consoleapi.in:/home/gokulakannan/public_html/data/portfolio.db
+ssh geekay@consoleapi.in "cd /home/gokulakannan/public_html && npm run db:seed"
 ```
 
 ### 4. Create the env file on the server
@@ -82,7 +86,8 @@ nano /home/gokulakannan/public_html/.env.local
 ```env
 ADMIN_PASSWORD=a-strong-password
 AUTH_SECRET=<openssl rand -base64 32>
-DATABASE_URL=/home/gokulakannan/public_html/data/portfolio.db
+# URL-encode special chars in the password (@ -> %40)
+MONGODB_URI=mongodb://portfolio_admin:<password>@127.0.0.1:27017/personal-portfolio
 API_SECRET_KEY=<openssl rand -hex 32>
 ```
 
@@ -90,7 +95,7 @@ API_SECRET_KEY=<openssl rand -hex 32>
 
 ```bash
 cd /home/gokulakannan/public_html
-node --experimental-sqlite server.js
+node server.js
 ```
 
 Hit `http://consoleapi.in:3000` — if it loads, the build is good. Stop it with `Ctrl+C`.
@@ -120,7 +125,7 @@ EnvironmentFile=/home/gokulakannan/public_html/.env.local
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=127.0.0.1
-ExecStart=node --experimental-sqlite server.js
+ExecStart=node server.js
 Restart=on-failure
 RestartSec=5
 
@@ -214,26 +219,32 @@ ssh geekay@consoleapi.in "sudo systemctl restart portfolio"
 
 ## Database
 
-The database lives at `DATABASE_URL` on the server. **Never copy your local DB over it after the first deploy** — it will erase live data.
+Data lives in MongoDB on the server (`MONGODB_URI`, database
+`personal-portfolio`, collections `posts` and `portfolios`).
+**Never re-run `npm run db:seed` after content has been edited live** — it
+upserts from the old SQLite/JSON sources and will overwrite newer edits.
 
 Back up before anything risky:
 
 ```bash
-cp data/portfolio.db data/portfolio.db.bak
+mongodump --uri="$MONGODB_URI" --out=backup-$(date +%F)
 ```
 
 Inspect:
 
 ```bash
-sqlite3 data/portfolio.db "SELECT slug, title, published FROM posts;"
+mongosh "$MONGODB_URI" --eval 'db.posts.find({}, {slug:1, title:1, published:1})'
 ```
+
+The legacy SQLite file (`data/portfolio.db`) is kept only as the one-time
+migration source for `db:seed`.
+
+For local dev without a MongoDB install, run the throwaway in-memory server
+in a separate terminal: `npx tsx scripts/dev-mongo.ts`.
 
 ---
 
 ## Troubleshooting
-
-**`ExperimentalWarning: SQLite is an experimental feature`**
-Expected on Node 22 — harmless. Check logs with `journalctl -u portfolio`.
 
 **Service fails to start**
 Check the exact error: `journalctl -u portfolio -n 50`

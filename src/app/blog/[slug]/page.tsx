@@ -7,10 +7,8 @@ import ReadingProgress from "@/components/blog/ReadingProgress";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Metadata } from "next";
 
-export async function generateStaticParams() {
-  const posts = getAllPosts();
-  return posts.map((p) => ({ slug: p.slug }));
-}
+// always render from the live database
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -18,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) return {};
   return {
     title: `${post.title} — Gokula Kannan`,
@@ -32,7 +30,7 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post || !post.published) notFound();
 
   const rt = readingTime(post.content);

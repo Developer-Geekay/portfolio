@@ -2,8 +2,8 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import DeletePostButton from "@/components/admin/DeletePostButton";
 
-export default function AdminPostsPage() {
-  const posts = getAllPosts(true);
+export default async function AdminPostsPage() {
+  const posts = await getAllPosts(true);
 
   return (
     <div>

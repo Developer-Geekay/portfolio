@@ -10,8 +10,11 @@ export const metadata: Metadata = {
     "Thoughts on OutSystems architecture, enterprise development, and technical leadership.",
 };
 
-export default function BlogPage() {
-  const posts = getAllPosts(false);
+// always render from the live database
+export const dynamic = "force-dynamic";
+
+export default async function BlogPage() {
+  const posts = await getAllPosts(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-mono">

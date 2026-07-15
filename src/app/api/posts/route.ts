@@ -11,7 +11,7 @@ function hasValidApiKey(req: NextRequest): boolean {
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  const posts = getAllPosts(!!(session || hasValidApiKey(req)));
+  const posts = await getAllPosts(!!(session || hasValidApiKey(req)));
   return NextResponse.json(posts);
 }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     if (!SLUG_RE.test(slug)) {
       return NextResponse.json({ message: "Invalid slug format." }, { status: 400 });
     }
-    savePost(slug, { ...rest, slug }, content ?? "");
+    await savePost(slug, { ...rest, slug }, content ?? "");
     revalidatePath("/blog");
     revalidatePath(`/blog/${slug}`);
     return NextResponse.json({ slug }, { status: 201 });
