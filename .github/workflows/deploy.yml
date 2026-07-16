@@ -1,0 +1,20 @@
+# Push-deploy to HostPanel: every push to main builds here on GitHub's
+# runners and ships the result to the Pi — the server never runs npm.
+# Requires repo secrets DEPLOY_URL and DEPLOY_TOKEN (until OIDC lands).
+
+name: Deploy to HostPanel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: Developer-Geekay/hostpanel-package-nodejs/.github/workflows/node-deploy.yml@main
+    with:
+      app_id: personal-portal-gokulakannan-dev
+      artifact_paths: dist server.js data package.json
+    secrets:
+      DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
