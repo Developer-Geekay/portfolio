@@ -1,3 +1,4 @@
+throw new Error("deliberately broken build - phase 5 test");
 /**
  * Pure Node.js server — zero external dependencies.
  * Requires Node.js v14.8+.
