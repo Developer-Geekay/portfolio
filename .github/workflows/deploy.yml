@@ -13,6 +13,9 @@ jobs:
     uses: Developer-Geekay/hostpanel-package-nodejs/.github/workflows/node-deploy.yml@main
     with:
       app_id: gokul-portfolio-gokulakannan-dev
-      artifact_paths: dist server.js data package.json
+      install_cmd: npm ci && npm install --no-save lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
+      build_cmd: npm run build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public && cp -r content data .next/standalone/
+      artifact_paths: .next/standalone
+      entrypoint: standalone/server.js
     secrets:
       DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
