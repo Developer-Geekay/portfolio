@@ -14,8 +14,8 @@ jobs:
     with:
       app_id: gokul-portfolio-gokulakannan-dev
       install_cmd: npm ci && npm install --no-save lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
-      build_cmd: npm run build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public && cp -r content data .next/standalone/
-      artifact_paths: .next/standalone
-      entrypoint: standalone/server.js
+      build_cmd: npm run build && cp -r public .next/standalone/public && cp -r .next/static .next/standalone/.next/static
+      artifact_paths: .next/standalone/.
+      entrypoint: server.js
     secrets:
       DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
