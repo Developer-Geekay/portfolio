@@ -46,3 +46,4 @@ data/*.db-wal
 
 # assistant build artifact — regenerate with npm run build:assistant
 /public/assistant/
+tsconfig.tsbuildinfo
