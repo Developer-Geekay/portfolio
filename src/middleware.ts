@@ -1,17 +1,18 @@
 import { auth } from "@/lib/auth";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-// Behind a reverse proxy that doesn't forward the original Host header,
-// req.url carries the internal host:port (e.g. localhost:31000) and an
-// absolute redirect built from it would send the browser there. Prefer an
-// explicit SITE_URL, then the standard forwarded headers, then req.url.
+// The redirect host comes only from trusted sources — an env override, else
+// the canonical domain in production, else the request origin in dev. Never
+// from request headers, so a forged X-Forwarded-Host cannot retarget the
+// redirect (open-redirect / phishing). The production default means no manual
+// server config is required; set SITE_URL to override (e.g. a staging host).
+const CANONICAL_URL = "https://gokulakannan.dev";
+
 function redirectTo(path: string, req: NextRequest) {
-  const forwardedHost = req.headers.get("x-forwarded-host");
-  const forwardedProto = req.headers.get("x-forwarded-proto") ?? "https";
   const base =
     process.env.SITE_URL ??
-    (forwardedHost ? `${forwardedProto}://${forwardedHost}` : req.url);
-  return Response.redirect(new URL(path, base));
+    (process.env.NODE_ENV === "production" ? CANONICAL_URL : req.nextUrl.origin);
+  return NextResponse.redirect(new URL(path, base));
 }
 
 export default auth((req) => {
