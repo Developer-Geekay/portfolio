@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import AssistantLauncher from "@/components/portfolio/AssistantLauncher";
 import projectBanking from "@/assets/project-banking.jpg";
 import projectDevtools from "@/assets/project-devtools.jpg";
 import projectBentley from "@/assets/project-bentley.jpg";
@@ -1458,6 +1459,8 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
           </footer>
         </main>
       </div>
+
+      <AssistantLauncher />
     </div>
   );
 }
