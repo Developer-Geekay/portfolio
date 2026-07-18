@@ -23,21 +23,18 @@ const projectImageMap: Record<string, typeof projectBanking> = {
   fnol: projectFnol,
 };
 
-const BOOT_LINES = [
-  { text: "> Verifying identity modules...", type: "info" },
-  { text: "> Loading OutSystems runtime...", type: "info" },
-  { text: "> Mounting portfolio interface...", type: "info" },
-  { text: "● SYSTEM_ONLINE // READY", type: "ok" },
-] as const;
+type UiText = PortfolioPageData["uiText"];
 
 // ── PageLoader ────────────────────────────────────────────────────────────────
 function PageLoader({
   logoText,
   bootNode,
+  bootLinesText,
   onComplete,
 }: {
   logoText: string;
   bootNode: string;
+  bootLinesText: UiText["bootLines"];
   onComplete: () => void;
 }) {
   const [visibleLines, setVisibleLines] = useState(0);
@@ -47,7 +44,7 @@ function PageLoader({
   onCompleteRef.current = onComplete;
   const bootLines = [
     { text: `$ BOOT --node=${bootNode} --operator=G.KANNAN`, type: "cmd" },
-    ...BOOT_LINES,
+    ...bootLinesText,
   ] as const;
 
   useEffect(() => {
@@ -830,6 +827,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
         <PageLoader
           logoText={portfolio.header.logoText}
           bootNode={portfolio.header.bootNode}
+          bootLinesText={portfolio.uiText.bootLines}
           onComplete={handleLoaderComplete}
         />
       )}
@@ -856,11 +854,11 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
               </div>
             </div>
             <div className="hidden md:flex gap-5 text-[11px] font-medium tracking-[0.18em] text-muted">
-              <a href="#root" className={navCls("root")}>[ 01_ROOT ]</a>
-              <a href="#projects" className={navCls("projects")}>[ 02_PROJECTS ]</a>
-              <a href="#history" className={navCls("history")}>[ 03_LOGS ]</a>
-              <Link href="/blog" className="hover:text-brand transition-colors duration-200">[ 04_BLOG ]</Link>
-              <a href="#connect" className={navCls("connect")}>[ 05_CONNECT ]</a>
+              <a href="#root" className={navCls("root")}>{portfolio.uiText.navLabels.root}</a>
+              <a href="#projects" className={navCls("projects")}>{portfolio.uiText.navLabels.projects}</a>
+              <a href="#history" className={navCls("history")}>{portfolio.uiText.navLabels.logs}</a>
+              <Link href="/blog" className="hover:text-brand transition-colors duration-200">{portfolio.uiText.navLabels.blog}</Link>
+              <a href="#connect" className={navCls("connect")}>{portfolio.uiText.navLabels.connect}</a>
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
@@ -1032,7 +1030,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                 data-scramble
                 className="text-base sm:text-xl font-bold uppercase tracking-widest whitespace-nowrap"
               >
-                Work_Log
+                {portfolio.uiText.sectionTitles.workLog}
               </h2>
               <div className="h-px flex-1 bg-gradient-to-r from-border/80 to-transparent" />
               <span className="text-brand text-xs cursor-blink">█</span>
@@ -1068,7 +1066,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                         data-scramble
                         className="text-base sm:text-xl font-bold uppercase tracking-widest"
                       >
-                        Career_History.log
+                        {portfolio.uiText.sectionTitles.careerHistory}
                       </h2>
                     </div>
                     <ol className="space-y-8 sm:space-y-10">
@@ -1149,7 +1147,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                 >
                   <div className="rounded-xl bg-surface/90 backdrop-blur-sm p-5 sm:p-6">
                     <h3 className="text-[11px] font-bold text-brand uppercase tracking-widest mb-6">
-                      _Current_Dependencies
+                      {portfolio.uiText.sectionTitles.currentDependencies}
                     </h3>
                     <div className="space-y-5">
                       {portfolio.proficiency.map((p) => (
@@ -1223,7 +1221,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                       style={{ boxShadow: "0 0 8px var(--brand)" }}
                     />
                     <h2 className="text-base font-bold uppercase tracking-widest">
-                      Certifications.cert
+                      {portfolio.uiText.sectionTitles.certifications}
                     </h2>
                   </div>
                   <ul className="space-y-4">
@@ -1252,7 +1250,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                       style={{ boxShadow: "0 0 8px var(--brand)" }}
                     />
                     <h2 className="text-base font-bold uppercase tracking-widest">
-                      Education.edu
+                      {portfolio.uiText.sectionTitles.education}
                     </h2>
                   </div>
                   <h3 className="text-base font-bold font-display">
@@ -1278,7 +1276,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                       style={{ boxShadow: "0 0 8px var(--brand)" }}
                     />
                     <h2 className="text-base font-bold uppercase tracking-widest">
-                      Awards.log
+                      {portfolio.uiText.sectionTitles.awards}
                     </h2>
                   </div>
                   <ul className="space-y-3">
@@ -1306,7 +1304,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                       style={{ boxShadow: "0 0 8px var(--brand)" }}
                     />
                     <h2 className="text-base font-bold uppercase tracking-widest">
-                      Languages.cfg
+                      {portfolio.uiText.sectionTitles.languages}
                     </h2>
                   </div>
                   <ul className="space-y-2.5 text-sm text-muted">
@@ -1364,7 +1362,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                   data-scramble
                   className="text-[clamp(1.5rem,6.5vw,4.5rem)] sm:text-5xl md:text-7xl font-display font-black mb-6 sm:mb-10 tracking-tighter text-glow break-words"
                 >
-                  INITIATE_COLLABORATION_
+                  {portfolio.uiText.sectionTitles.collaboration}
                 </h2>
 
                 <a
@@ -1383,26 +1381,20 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
               <div className="grid sm:grid-cols-3 gap-3 sm:gap-4 mb-10 sm:mb-20 max-w-4xl mx-auto" data-reveal data-delay="100">
                 {[
                   {
-                    index: "01",
-                    label: "PHONE",
+                    ...portfolio.uiText.contactActions[0],
                     value: portfolio.contact.phone,
-                    action: "DIAL",
                     href: `tel:${portfolio.contact.phone.replace(/\s/g, "")}`,
                     external: false,
                   },
                   {
-                    index: "02",
-                    label: "LINKEDIN",
+                    ...portfolio.uiText.contactActions[1],
                     value: portfolio.contact.linkedinLabel,
-                    action: "CONNECT",
                     href: portfolio.contact.linkedinUrl,
                     external: true,
                   },
                   {
-                    index: "03",
-                    label: "GITHUB",
+                    ...portfolio.uiText.contactActions[2],
                     value: portfolio.contact.githubLabel,
-                    action: "VIEW_CODE",
                     href: portfolio.contact.githubUrl,
                     external: true,
                   },
@@ -1460,7 +1452,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                   />
                   LINK_ESTABLISHED: {portfolio.header.nodeLabel}
                 </div>
-                <div>© 2026 G.KANNAN // ALL_RIGHTS_RESERVED</div>
+                <div>{portfolio.uiText.footerText}</div>
               </div>
             </div>
           </footer>

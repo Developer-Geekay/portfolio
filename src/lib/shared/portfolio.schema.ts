@@ -140,6 +140,76 @@ export const seoSchema = z.object({
   ogDescription: z.string().min(1),
 });
 
+export const bootLineSchema = z.object({
+  text: z.string().min(1),
+  type: z.enum(["info", "ok"]),
+});
+
+export const contactActionSchema = z.object({
+  index: z.string().min(1),
+  label: z.string().min(1),
+  action: z.string().min(1),
+});
+
+export const UI_TEXT_DEFAULTS = {
+  bootLines: [
+    { text: "> Verifying identity modules...", type: "info" as const },
+    { text: "> Loading OutSystems runtime...", type: "info" as const },
+    { text: "> Mounting portfolio interface...", type: "info" as const },
+    { text: "● SYSTEM_ONLINE // READY", type: "ok" as const },
+  ],
+  navLabels: {
+    root: "[ 01_ROOT ]",
+    projects: "[ 02_PROJECTS ]",
+    logs: "[ 03_LOGS ]",
+    blog: "[ 04_BLOG ]",
+    connect: "[ 05_CONNECT ]",
+  },
+  sectionTitles: {
+    workLog: "Work_Log",
+    careerHistory: "Career_History.log",
+    currentDependencies: "_Current_Dependencies",
+    certifications: "Certifications.cert",
+    education: "Education.edu",
+    awards: "Awards.log",
+    languages: "Languages.cfg",
+    collaboration: "INITIATE_COLLABORATION_",
+  },
+  contactActions: [
+    { index: "01", label: "PHONE", action: "DIAL" },
+    { index: "02", label: "LINKEDIN", action: "CONNECT" },
+    { index: "03", label: "GITHUB", action: "VIEW_CODE" },
+  ],
+  footerText: "© 2026 G.KANNAN // ALL_RIGHTS_RESERVED",
+};
+
+export const uiTextSchema = z.object({
+  bootLines: z.array(bootLineSchema).default(UI_TEXT_DEFAULTS.bootLines),
+  navLabels: z
+    .object({
+      root: z.string().min(1),
+      projects: z.string().min(1),
+      logs: z.string().min(1),
+      blog: z.string().min(1),
+      connect: z.string().min(1),
+    })
+    .default(UI_TEXT_DEFAULTS.navLabels),
+  sectionTitles: z
+    .object({
+      workLog: z.string().min(1),
+      careerHistory: z.string().min(1),
+      currentDependencies: z.string().min(1),
+      certifications: z.string().min(1),
+      education: z.string().min(1),
+      awards: z.string().min(1),
+      languages: z.string().min(1),
+      collaboration: z.string().min(1),
+    })
+    .default(UI_TEXT_DEFAULTS.sectionTitles),
+  contactActions: z.array(contactActionSchema).length(3).default(UI_TEXT_DEFAULTS.contactActions),
+  footerText: z.string().min(1).default(UI_TEXT_DEFAULTS.footerText),
+});
+
 export const portfolioPageDataSchema = z.object({
   header: headerSchema.default({
     logoText: ">_ GK",
@@ -160,8 +230,21 @@ export const portfolioPageDataSchema = z.object({
   languages: z.array(languageSchema),
   contact: contactSchema,
   seo: seoSchema,
+  uiText: uiTextSchema.default(UI_TEXT_DEFAULTS),
 });
 
 export type PortfolioPageData = z.infer<typeof portfolioPageDataSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export type Experience = z.infer<typeof experienceSchema>;
+export type StackGroup = z.infer<typeof stackGroupSchema>;
+export type Certification = z.infer<typeof certificationSchema>;
+export type Proficiency = z.infer<typeof proficiencySchema>;
+export type Award = z.infer<typeof awardSchema>;
+export type Language = z.infer<typeof languageSchema>;
+export type Header = z.infer<typeof headerSchema>;
+export type Profile = z.infer<typeof profileSchema>;
+export type Hero = z.infer<typeof heroSchema>;
+export type Education = z.infer<typeof educationSchema>;
+export type Contact = z.infer<typeof contactSchema>;
+export type Seo = z.infer<typeof seoSchema>;
+export type UiText = z.infer<typeof uiTextSchema>;

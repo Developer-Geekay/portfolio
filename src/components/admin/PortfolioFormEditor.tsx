@@ -472,9 +472,91 @@ function ContactSection({
   );
 }
 
+function UiTextSection({
+  data,
+  set,
+}: {
+  data: PortfolioPageData;
+  set: (fn: (d: PortfolioPageData) => PortfolioPageData) => void;
+}) {
+  const u = data.uiText;
+  const setUi = (fn: (u: PortfolioPageData["uiText"]) => PortfolioPageData["uiText"]) =>
+    set((d) => ({ ...d, uiText: fn(d.uiText) }));
+
+  const titleFields: { key: keyof typeof u.sectionTitles; label: string }[] = [
+    { key: "workLog", label: "Projects section" },
+    { key: "careerHistory", label: "Experience section" },
+    { key: "currentDependencies", label: "Proficiency panel" },
+    { key: "certifications", label: "Certifications card" },
+    { key: "education", label: "Education card" },
+    { key: "awards", label: "Awards card" },
+    { key: "languages", label: "Languages card" },
+    { key: "collaboration", label: "Contact heading" },
+  ];
+  const navFields: { key: keyof typeof u.navLabels; label: string }[] = [
+    { key: "root", label: "Root" },
+    { key: "projects", label: "Projects" },
+    { key: "logs", label: "Logs" },
+    { key: "blog", label: "Blog" },
+    { key: "connect", label: "Connect" },
+  ];
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-2">
+      <Card>
+        <SectionTitle>Section Titles</SectionTitle>
+        {titleFields.map(({ key, label }) => (
+          <F key={key} label={label} value={u.sectionTitles[key]} onChange={(v) => setUi((x) => ({ ...x, sectionTitles: { ...x.sectionTitles, [key]: v } }))} />
+        ))}
+        <F label="Footer text" value={u.footerText} onChange={(v) => setUi((x) => ({ ...x, footerText: v }))} />
+      </Card>
+      <div className="space-y-5">
+        <Card>
+          <SectionTitle>Nav Labels</SectionTitle>
+          {navFields.map(({ key, label }) => (
+            <F key={key} label={label} value={u.navLabels[key]} onChange={(v) => setUi((x) => ({ ...x, navLabels: { ...x.navLabels, [key]: v } }))} />
+          ))}
+        </Card>
+        <Card>
+          <SectionTitle>Boot Loader Lines</SectionTitle>
+          {u.bootLines.map((line, i) => (
+            <div key={i} className="flex items-end gap-3">
+              <div className="flex-1">
+                <F label={`Line ${i + 1}`} value={line.text} onChange={(v) => setUi((x) => ({ ...x, bootLines: x.bootLines.map((l, j) => (j === i ? { ...l, text: v } : l)) }))} />
+              </div>
+              <button
+                type="button"
+                onClick={() => setUi((x) => ({ ...x, bootLines: x.bootLines.map((l, j) => (j === i ? { ...l, type: l.type === "ok" ? "info" : "ok" } : l)) }))}
+                className={`mb-0.5 border px-3 py-2 text-[10px] uppercase tracking-widest transition-colors ${line.type === "ok" ? "border-brand/40 text-brand" : "border-border text-muted"}`}
+                title="Toggle line style (ok = highlighted)"
+              >
+                {line.type}
+              </button>
+              <div className="mb-0.5">
+                <BtnRemove onClick={() => setUi((x) => ({ ...x, bootLines: x.bootLines.filter((_, j) => j !== i) }))} />
+              </div>
+            </div>
+          ))}
+          <BtnAdd label="+ Add line" onClick={() => setUi((x) => ({ ...x, bootLines: [...x.bootLines, { text: "> New line...", type: "info" }] }))} />
+        </Card>
+        <Card>
+          <SectionTitle>Contact Card Labels</SectionTitle>
+          {u.contactActions.map((action, i) => (
+            <div key={i} className="grid grid-cols-3 gap-3">
+              <F label={`#${i + 1} index`} value={action.index} onChange={(v) => setUi((x) => ({ ...x, contactActions: x.contactActions.map((a, j) => (j === i ? { ...a, index: v } : a)) }))} />
+              <F label="Label" value={action.label} onChange={(v) => setUi((x) => ({ ...x, contactActions: x.contactActions.map((a, j) => (j === i ? { ...a, label: v } : a)) }))} />
+              <F label="Action" value={action.action} onChange={(v) => setUi((x) => ({ ...x, contactActions: x.contactActions.map((a, j) => (j === i ? { ...a, action: v } : a)) }))} />
+            </div>
+          ))}
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 // ── tabs ───────────────────────────────────────────────────────────────────────
 
-type Section = "header" | "profile" | "projects" | "experience" | "stack" | "certifications" | "contact";
+type Section = "header" | "profile" | "projects" | "experience" | "stack" | "certifications" | "contact" | "uiText";
 
 const SECTIONS: { id: Section; label: string }[] = [
   { id: "header", label: "Header" },
@@ -484,6 +566,7 @@ const SECTIONS: { id: Section; label: string }[] = [
   { id: "stack", label: "Stack" },
   { id: "certifications", label: "Certs" },
   { id: "contact", label: "Contact" },
+  { id: "uiText", label: "UI Text" },
 ];
 
 // ── main ───────────────────────────────────────────────────────────────────────
@@ -652,6 +735,7 @@ export default function PortfolioFormEditor() {
       {active === "stack"          && <StackSection          data={portfolio} set={set} />}
       {active === "certifications" && <CertificationsSection data={portfolio} set={set} />}
       {active === "contact"        && <ContactSection        data={portfolio} set={set} />}
+      {active === "uiText"         && <UiTextSection         data={portfolio} set={set} />}
     </div>
   );
 }
