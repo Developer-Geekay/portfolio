@@ -4,10 +4,15 @@ import AdminNav from "@/components/admin/AdminNav";
 import SignOutButton from "@/components/admin/SignOutButton";
 import AdminAccent from "@/components/admin/AdminAccent";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { dbConnect } from "@/lib/db/client";
+import { legacyBlobExists } from "@/lib/server/services/portfolio.migration.server";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect("/admin/login");
+
+  await dbConnect();
+  const showData = await legacyBlobExists();
 
   return (
     <div className="min-h-screen bg-background text-foreground font-mono">
@@ -19,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <div className="size-2 bg-brand glow-sm" />
               <span className="text-xs font-bold tracking-widest text-brand">&gt;_ ADMIN</span>
             </div>
-            <AdminNav />
+            <AdminNav showData={showData} />
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />

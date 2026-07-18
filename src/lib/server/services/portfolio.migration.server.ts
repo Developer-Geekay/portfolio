@@ -6,6 +6,16 @@ import { PortfolioProfile } from "../../db/schema";
 const LEGACY_COLLECTION = "portfolios";
 const BACKUP_COLLECTION = "portfolios_backup";
 
+// True when the legacy single-document store still exists — i.e. a migration
+// is still pending. Used to show/hide the admin Data (migration) tab, which is
+// only relevant until the one-time migration has run.
+export async function legacyBlobExists(): Promise<boolean> {
+  const db = mongoose.connection.db;
+  if (!db) return false;
+  const found = await db.listCollections({ name: LEGACY_COLLECTION }).toArray();
+  return found.length > 0;
+}
+
 // Migrates the legacy single-document store ({ data: <whole payload> } in the
 // "portfolios" collection) into the per-section collections. Called lazily by
 // getPortfolio() when the new store is empty, and by the seed script — so a
