@@ -42,6 +42,28 @@ const postSchema = new Schema<PostDoc>(
 export const Post: Model<PostDoc> =
   (mongoose.models.Post as Model<PostDoc>) ?? mongoose.model<PostDoc>("Post", postSchema);
 
+export type PageViewDoc = {
+  day: string; // YYYY-MM-DD (UTC)
+  ip: string;
+  browser: string;
+  os: string;
+  path: string;
+  at: Date;
+};
+
+const pageViewSchema = new Schema<PageViewDoc>({
+  day: { type: String, required: true, index: true },
+  ip: { type: String, default: "unknown" },
+  browser: { type: String, default: "Unknown" },
+  os: { type: String, default: "Unknown" },
+  path: { type: String, default: "/" },
+  at: { type: Date, default: () => new Date() },
+});
+
+export const PageView: Model<PageViewDoc> =
+  (mongoose.models.PageView as Model<PageViewDoc>) ??
+  mongoose.model<PageViewDoc>("PageView", pageViewSchema, "analytics_pageviews");
+
 // ── Portfolio: one collection per section ──────────────────────────────────
 // Field types mirror the zod schemas in ../shared/portfolio.schema.ts, which
 // remain the single source of business validation; Mongoose only enforces

@@ -7,6 +7,7 @@ const baseLinks = [
   { href: "/admin", label: "[ DASHBOARD ]", exact: true },
   { href: "/admin/posts", label: "[ POSTS ]", exact: false },
   { href: "/admin/portfolio", label: "[ PORTFOLIO ]", exact: false },
+  { href: "/admin/analytics", label: "[ ANALYTICS ]", exact: false },
   { href: "/", label: "[ VIEW_SITE ]", exact: true },
 ];
 
