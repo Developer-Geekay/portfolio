@@ -1,18 +1,9 @@
 import { auth } from "@/lib/auth";
 import { NextResponse, type NextRequest } from "next/server";
-
-// The redirect host comes only from trusted sources — an env override, else
-// the canonical domain in production, else the request origin in dev. Never
-// from request headers, so a forged X-Forwarded-Host cannot retarget the
-// redirect (open-redirect / phishing). The production default means no manual
-// server config is required; set SITE_URL to override (e.g. a staging host).
-const CANONICAL_URL = "https://gokulakannan.dev";
+import { siteOrigin } from "@/lib/site-url";
 
 function redirectTo(path: string, req: NextRequest) {
-  const base =
-    process.env.SITE_URL ??
-    (process.env.NODE_ENV === "production" ? CANONICAL_URL : req.nextUrl.origin);
-  return NextResponse.redirect(new URL(path, base));
+  return NextResponse.redirect(new URL(path, siteOrigin(req.nextUrl.origin)));
 }
 
 export default auth((req) => {
