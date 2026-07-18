@@ -15,17 +15,18 @@ export function siteOrigin(devFallback?: string): string {
   return devFallback ?? CANONICAL_URL;
 }
 
-// Resolves a post-auth redirect target against the trusted origin, rejecting
-// any off-site URL (open-redirect / phishing protection). Accepts a relative
-// path ("/admin") or an absolute URL that must match the trusted origin.
+// Resolves a post-auth redirect target to a URL guaranteed to be on the
+// trusted origin (open-redirect / phishing protection). Only the path portion
+// of the target is ever used and it is always re-anchored to the trusted
+// origin, so absolute URLs (including the leaked proxy host), protocol-relative
+// ("//evil.com") and backslash ("/\evil.com") tricks can never change the host.
 export function resolveInternalRedirect(target: string, devFallback?: string): string {
   const origin = siteOrigin(devFallback);
-  if (target.startsWith("/")) return new URL(target, origin).toString();
   try {
-    const url = new URL(target);
-    if (url.origin === new URL(origin).origin) return url.toString();
+    const parsed = new URL(target, origin);
+    return new URL(`${parsed.pathname}${parsed.search}${parsed.hash}`, origin).toString();
   } catch {
-    // fall through to safe default
+    // malformed target — fall through to safe default
+    return origin;
   }
-  return origin;
 }
