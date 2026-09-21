@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { Bot } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import AssistantLauncher from "@/components/portfolio/AssistantLauncher";
 import projectBanking from "@/assets/project-banking.jpg";
@@ -752,6 +753,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
   const [revealReady, setRevealReady] = useState(false);
   const [typingReady, setTypingReady] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   const handleLoaderComplete = () => {
     setContentVisible(true);
@@ -872,6 +874,18 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
               <div className="hidden lg:block text-[10px] bg-brand/10 px-2.5 py-1 border border-brand/20 rounded text-brand tracking-widest whitespace-nowrap">
                 {time} {portfolio.header.timeLabel}
               </div>
+              {!assistantOpen && (
+                <button
+                  onClick={() => setAssistantOpen(true)}
+                  aria-label="Open Gokul's AI assistant"
+                  title="Ask Gokul's AI"
+                  className="flex items-center gap-1.5 text-[10px] bg-brand/10 hover:bg-brand hover:text-brand-foreground px-2.5 py-1 border border-brand/25 hover:border-brand rounded text-brand tracking-widest font-mono transition-all duration-200"
+                >
+                  <span className="size-1.5 rounded-full bg-brand animate-glow-pulse" />
+                  <Bot className="size-3.5" />
+                  <span className="font-bold">AI</span>
+                </button>
+              )}
               {/* Hamburger — mobile only */}
               <button
                 className="md:hidden flex flex-col justify-center items-center gap-[5px] w-11 h-11 -mr-1"
@@ -1474,7 +1488,10 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
         </main>
       </div>
 
-      <AssistantLauncher />
+      <AssistantLauncher
+        open={assistantOpen}
+        onOpenChange={setAssistantOpen}
+      />
     </div>
   );
 }
