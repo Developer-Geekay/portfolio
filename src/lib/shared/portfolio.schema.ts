@@ -161,8 +161,8 @@ export const UI_TEXT_DEFAULTS = {
   navLabels: {
     root: "[ 01_ROOT ]",
     projects: "[ 02_PROJECTS ]",
-    logs: "[ 03_LOGS ]",
-    blog: "[ 04_BLOG ]",
+    works: "[ 03_WORKS ]",
+    logs: "[ 04_LOGS ]",
     connect: "[ 05_CONNECT ]",
   },
   sectionTitles: {
@@ -187,11 +187,12 @@ export const uiTextSchema = z.object({
   bootLines: z.array(bootLineSchema).default(UI_TEXT_DEFAULTS.bootLines),
   navLabels: z
     .object({
-      root: z.string().min(1),
-      projects: z.string().min(1),
-      logs: z.string().min(1),
-      blog: z.string().min(1),
-      connect: z.string().min(1),
+      root: z.string().min(1).default("[ 01_ROOT ]"),
+      projects: z.string().min(1).default("[ 02_PROJECTS ]"),
+      works: z.string().min(1).default("[ 03_WORKS ]"),
+      logs: z.string().min(1).default("[ 04_LOGS ]"),
+      blog: z.string().optional(),
+      connect: z.string().min(1).default("[ 05_CONNECT ]"),
     })
     .default(UI_TEXT_DEFAULTS.navLabels),
   sectionTitles: z

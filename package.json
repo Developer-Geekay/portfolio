@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "build:assistant": "./scripts/build-assistant.sh",
     "after_prepare": "node scripts/after_prepare.js"
   },
   "dependencies": {

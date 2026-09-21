@@ -204,6 +204,7 @@ export const PortfolioUiText = defineModel<UiText>("PortfolioUiText", "portfolio
   navLabels: {
     root: String,
     projects: String,
+    works: String,
     logs: String,
     blog: String,
     connect: String,

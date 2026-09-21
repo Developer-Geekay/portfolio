@@ -19,24 +19,12 @@ sudo apt-get install -y nodejs nginx
 ## Build locally
 
 ```bash
-npm run build:assistant   # builds the Gokul AI assistant → public/assistant/
 npm run build
 ```
 
-`build:assistant` needs the assistant repo checked out at
-`../AI/portfolio-assistance` (override with `ASSISTANT_DIR=...`). The output
-is a gitignored artifact — run it before every deploy. The assistant serves
-at `/assistant`; its API calls hit `/assistant-api/*`, which Next proxies
-to the FastAPI backend (`ASSISTANT_API_URL` env, default
-`http://localhost:16000` — the backend must run on the server too, see the
-assistant repo's DEPLOYMENT.md).
+The standalone output lands in `.next/standalone/` and is automatically packaged into `release/` by `scripts/after_prepare.js`.
 
-The standalone output lands in `.next/standalone/`. Next.js does not copy public assets into it automatically, so copy them in:
-
-```bash
-cp -r public .next/standalone/public
-cp -r .next/static .next/standalone/.next/static
-```
+---
 
 ---
 

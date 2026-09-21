@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import AssistantLauncher from "@/components/portfolio/AssistantLauncher";
@@ -857,8 +856,15 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
             <div className="hidden md:flex gap-5 text-[11px] font-medium tracking-[0.18em] text-muted">
               <a href="#root" className={navCls("root")}>{portfolio.uiText.navLabels.root}</a>
               <a href="#projects" className={navCls("projects")}>{portfolio.uiText.navLabels.projects}</a>
-              <a href="#history" className={navCls("history")}>{portfolio.uiText.navLabels.logs}</a>
-              <Link href="/blog" className="hover:text-brand transition-colors duration-200">{portfolio.uiText.navLabels.blog}</Link>
+              <a href="#history" className={navCls("history")}>{portfolio.uiText.navLabels.works}</a>
+              <a
+                href={process.env.NEXT_PUBLIC_LOGS_URL || "https://log.gokulakannan.dev"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-brand transition-colors duration-200"
+              >
+                {portfolio.uiText.navLabels.logs}
+              </a>
               <a href="#connect" className={navCls("connect")}>{portfolio.uiText.navLabels.connect}</a>
             </div>
             <div className="flex items-center gap-3">
@@ -881,11 +887,19 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
           {/* Mobile menu */}
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-2xl px-4 py-4 flex flex-col gap-4 text-[11px] font-medium tracking-[0.18em] text-muted">
-              <a href="#root" onClick={() => setMobileMenuOpen(false)} className={navCls("root")}>[ 01_ROOT ]</a>
-              <a href="#projects" onClick={() => setMobileMenuOpen(false)} className={navCls("projects")}>[ 02_PROJECTS ]</a>
-              <a href="#history" onClick={() => setMobileMenuOpen(false)} className={navCls("history")}>[ 03_LOGS ]</a>
-              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand transition-colors duration-200">[ 04_BLOG ]</Link>
-              <a href="#connect" onClick={() => setMobileMenuOpen(false)} className={navCls("connect")}>[ 05_CONNECT ]</a>
+              <a href="#root" onClick={() => setMobileMenuOpen(false)} className={navCls("root")}>{portfolio.uiText.navLabels.root || "[ 01_ROOT ]"}</a>
+              <a href="#projects" onClick={() => setMobileMenuOpen(false)} className={navCls("projects")}>{portfolio.uiText.navLabels.projects || "[ 02_PROJECTS ]"}</a>
+              <a href="#history" onClick={() => setMobileMenuOpen(false)} className={navCls("history")}>{portfolio.uiText.navLabels.works || "[ 03_WORKS ]"}</a>
+              <a
+                href={process.env.NEXT_PUBLIC_LOGS_URL || "https://log.gokulakannan.dev"}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-brand transition-colors duration-200"
+              >
+                {portfolio.uiText.navLabels.logs || "[ 04_LOGS ]"}
+              </a>
+              <a href="#connect" onClick={() => setMobileMenuOpen(false)} className={navCls("connect")}>{portfolio.uiText.navLabels.connect || "[ 05_CONNECT ]"}</a>
             </div>
           )}
           {/* Gradient progress bar */}

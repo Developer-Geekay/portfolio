@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-const ASSISTANT_URL = "/assistant";
+const ASSISTANT_URL =
+  process.env.NEXT_PUBLIC_ASSISTANT_URL || "https://assitant.gokulakannan.dev";
+const isExternal = /^https?:\/\//i.test(ASSISTANT_URL);
 const DISMISS_KEY = "assistant_popup_dismissed";
 
 function ChatIcon({ className }: { className?: string }) {
@@ -87,6 +89,8 @@ export default function AssistantLauncher() {
           </div>
           <a
             href={ASSISTANT_URL}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
             className="block p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
             <p className="min-h-[3.5em] text-xs leading-relaxed text-foreground/85">
@@ -103,6 +107,8 @@ export default function AssistantLauncher() {
       {/* floating chat button */}
       <a
         href={ASSISTANT_URL}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
         aria-label="Open Gokul's AI assistant"
         title="Ask Gokul's AI"
         className="group relative flex size-14 items-center justify-center rounded-full bg-brand text-brand-foreground

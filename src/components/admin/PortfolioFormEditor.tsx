@@ -493,11 +493,11 @@ function UiTextSection({
     { key: "languages", label: "Languages card" },
     { key: "collaboration", label: "Contact heading" },
   ];
-  const navFields: { key: keyof typeof u.navLabels; label: string }[] = [
+  const navFields: { key: "root" | "projects" | "works" | "logs" | "connect"; label: string }[] = [
     { key: "root", label: "Root" },
     { key: "projects", label: "Projects" },
+    { key: "works", label: "Works" },
     { key: "logs", label: "Logs" },
-    { key: "blog", label: "Blog" },
     { key: "connect", label: "Connect" },
   ];
 
@@ -514,7 +514,7 @@ function UiTextSection({
         <Card>
           <SectionTitle>Nav Labels</SectionTitle>
           {navFields.map(({ key, label }) => (
-            <F key={key} label={label} value={u.navLabels[key]} onChange={(v) => setUi((x) => ({ ...x, navLabels: { ...x.navLabels, [key]: v } }))} />
+            <F key={key} label={label} value={u.navLabels[key] ?? ""} onChange={(v) => setUi((x) => ({ ...x, navLabels: { ...x.navLabels, [key]: v } }))} />
           ))}
         </Card>
         <Card>
