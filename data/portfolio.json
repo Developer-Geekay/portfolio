@@ -90,6 +90,7 @@
       "year": "2025 - Present",
       "blurb": "Large-scale OutSystems platform covering UI, integrations, and modular architecture. Led R&D/POCs for Regula, FACEKI, HyperPay and engineered custom Cordova native plugins.",
       "imageKey": "banking",
+      "imageUrl": "",
       "tags": [
         "OutSystems O11",
         "Cordova",
@@ -109,6 +110,7 @@
       "year": "2026",
       "blurb": "Chrome-based developer tooling extension for OutSystems applications, rebuilt in React (v3): runtime inspection, React component tree analysis, network monitoring, mock rule engine, client storage & Local DB inspection.",
       "imageKey": "devtools",
+      "imageUrl": "",
       "tags": [
         "React",
         "Chrome API",
@@ -127,6 +129,7 @@
       "year": "2023 - 2024",
       "blurb": "End-to-end solution architecture and technical implementation for Bentley Motors global dealer recognition and award management platform.",
       "imageKey": "bentley",
+      "imageUrl": "",
       "tags": [
         "Solution Architecture",
         "OutSystems",
@@ -144,6 +147,7 @@
       "year": "2022 - 2023",
       "blurb": "Supervised architecture, data modeling restructuring (53% performance gain), and enhanced interfaces for enterprise insurance claim management handling end-to-end FNOL flows.",
       "imageKey": "fnol",
+      "imageUrl": "",
       "tags": [
         "Insurance",
         "Data Modeling",

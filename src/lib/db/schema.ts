@@ -87,6 +87,7 @@ export const PortfolioProject = defineModel<Project>("PortfolioProject", "portfo
   year: String,
   blurb: String,
   imageKey: String,
+  imageUrl: String,
   tags: [String],
   link: String,
   featured: Boolean,

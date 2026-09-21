@@ -66,11 +66,12 @@ export const projectSchema = z.object({
   client: z.string().min(1),
   year: z.string().min(1),
   blurb: z.string().min(1),
-  imageKey: z.string().min(1),
+  imageKey: z.string().default("banking"),
+  imageUrl: z.string().optional().default(""),
   tags: z.array(z.string().min(1)),
-  link: z.string().url().optional().or(z.literal("")),
-  featured: z.boolean(),
-  sortOrder: z.number().int(),
+  link: z.string().default(""),
+  featured: z.boolean().default(false),
+  sortOrder: z.number().int().default(0),
 });
 
 export const experienceSchema = z.object({

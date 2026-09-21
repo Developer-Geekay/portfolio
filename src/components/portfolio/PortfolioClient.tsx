@@ -640,25 +640,28 @@ function getDynamicHeroCommand(command: string, role: string) {
 
 // ── ProjectCard ───────────────────────────────────────────────────────────────
 type ProjectWithImage = {
+  id?: string;
   code: string;
   title: string;
   client: string;
   year: string | number;
   blurb: string;
   tags: string[];
-  image: typeof projectBanking;
+  image: typeof projectBanking | string;
+  link?: string;
 };
 
 function ProjectCard({ p, i }: { p: ProjectWithImage; i: number }) {
   const tilt = useTilt(6);
-  return (
+  const cardNode = (
     <div
       data-reveal
       data-delay={i % 2 === 1 ? "150" : undefined}
       style={{ willChange: "transform" }}
+      className="h-full"
     >
       <div
-        className="p-px rounded-xl group transition-all duration-300"
+        className="p-px rounded-xl group transition-all duration-300 h-full"
         style={{
           background:
             "linear-gradient(135deg, color-mix(in srgb, var(--brand) 15%, transparent), transparent 50%)",
@@ -668,48 +671,61 @@ function ProjectCard({ p, i }: { p: ProjectWithImage; i: number }) {
           ref={tilt.ref}
           onMouseMove={tilt.onMouseMove}
           onMouseLeave={tilt.onMouseLeave}
-          className="rounded-xl bg-surface/90 backdrop-blur-sm overflow-hidden hover:bg-surface transition-colors duration-300"
+          className="rounded-xl bg-surface/90 backdrop-blur-sm overflow-hidden hover:bg-surface transition-colors duration-300 h-full flex flex-col justify-between"
         >
-          <div className="relative aspect-video overflow-hidden">
-            <Image
-              src={p.image}
-              alt={`${p.title} project visual`}
-              className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-            />
-            <div className="absolute inset-0 bg-brand opacity-0 group-hover:opacity-50 transition-opacity duration-700 mix-blend-color" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-            <div
-              className="absolute bottom-4 left-4 text-[10px] bg-brand text-brand-foreground px-2.5 py-1 font-bold tracking-widest rounded-sm"
-              style={{
-                boxShadow: "0 0 12px color-mix(in srgb, var(--brand) 40%, transparent)",
-              }}
-            >
-              {p.code}
+          <div>
+            <div className="relative aspect-video overflow-hidden">
+              {typeof p.image === "string" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={p.image}
+                  alt={`${p.title} project visual`}
+                  className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                />
+              ) : (
+                <Image
+                  src={p.image}
+                  alt={`${p.title} project visual`}
+                  className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                />
+              )}
+              <div className="absolute inset-0 bg-brand opacity-0 group-hover:opacity-50 transition-opacity duration-700 mix-blend-color" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+              <div
+                className="absolute bottom-4 left-4 text-[10px] bg-brand text-brand-foreground px-2.5 py-1 font-bold tracking-widest rounded-sm"
+                style={{
+                  boxShadow: "0 0 12px color-mix(in srgb, var(--brand) 40%, transparent)",
+                }}
+              >
+                {p.code}
+              </div>
+              <div className="absolute top-4 right-4 text-[10px] bg-background/70 backdrop-blur-sm border border-border/60 text-muted px-2.5 py-1 rounded-sm tracking-widest">
+                [{p.year}]
+              </div>
             </div>
-            <div className="absolute top-4 right-4 text-[10px] bg-background/70 backdrop-blur-sm border border-border/60 text-muted px-2.5 py-1 rounded-sm tracking-widest">
-              [{p.year}]
+            <div className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold font-display group-hover:text-brand transition-colors duration-300">
+                  {p.title}
+                </h3>
+                <p className="text-[11px] text-brand/60 mt-1 tracking-widest uppercase">
+                  @ {p.client}
+                </p>
+              </div>
+              <p className="text-sm text-muted leading-relaxed mb-5">{p.blurb}</p>
+              <div className="flex flex-wrap gap-1.5 mb-5">
+                {p.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="text-[10px] px-2.5 py-1 border border-border/60 text-muted tracking-wider rounded-sm group-hover:border-brand/25 group-hover:text-muted transition-colors duration-200"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="p-6">
-            <div className="mb-4">
-              <h3 className="text-lg font-bold font-display group-hover:text-brand transition-colors duration-300">
-                {p.title}
-              </h3>
-              <p className="text-[11px] text-brand/60 mt-1 tracking-widest uppercase">
-                @ {p.client}
-              </p>
-            </div>
-            <p className="text-sm text-muted leading-relaxed mb-5">{p.blurb}</p>
-            <div className="flex flex-wrap gap-1.5 mb-5">
-              {p.tags.map((t) => (
-                <span
-                  key={t}
-                  className="text-[10px] px-2.5 py-1 border border-border/60 text-muted tracking-wider rounded-sm group-hover:border-brand/25 group-hover:text-muted transition-colors duration-200"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
+          <div className="px-6 pb-6 pt-0">
             <div className="text-[10px] text-brand/50 font-bold tracking-widest group-hover:text-brand transition-colors flex items-center gap-1.5">
               EXECUTE_VIEW
               <span className="inline-block translate-x-0 group-hover:translate-x-2 transition-transform duration-300">
@@ -721,6 +737,21 @@ function ProjectCard({ p, i }: { p: ProjectWithImage; i: number }) {
       </div>
     </div>
   );
+
+  if (p.link && p.link.trim()) {
+    return (
+      <a
+        href={p.link.trim()}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block h-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand rounded-xl"
+      >
+        {cardNode}
+      </a>
+    );
+  }
+
+  return cardNode;
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -817,7 +848,9 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
 
   const projects = portfolio.projects.map((project) => ({
     ...project,
-    image: projectImageMap[project.imageKey] ?? projectBanking,
+    image: project.imageUrl?.trim()
+      ? project.imageUrl.trim()
+      : (projectImageMap[project.imageKey] ?? projectBanking),
   }));
 
   return (

@@ -1,8 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import type { PortfolioPageData } from "@/lib/shared/portfolio.schema";
+import projectBanking from "@/assets/project-banking.jpg";
+import projectDevtools from "@/assets/project-devtools.jpg";
+import projectBentley from "@/assets/project-bentley.jpg";
+import projectFnol from "@/assets/project-fnol.jpg";
+
+const PRESET_IMAGE_OPTIONS = [
+  { value: "banking", label: "Fintech / Banking (banking)" },
+  { value: "devtools", label: "Developer Tooling (devtools)" },
+  { value: "bentley", label: "Automotive / Enterprise (bentley)" },
+  { value: "fnol", label: "Insurance Claims / FNOL (fnol)" },
+] as const;
+
+const PRESET_IMAGE_MAP: Record<string, string> = {
+  banking: projectBanking.src,
+  devtools: projectDevtools.src,
+  bentley: projectBentley.src,
+  fnol: projectFnol.src,
+};
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -212,6 +229,166 @@ function ProfileSection({
   );
 }
 
+function ProjectImageManager({
+  imageUrl,
+  imageKey,
+  onChangeUrl,
+  onChangeKey,
+}: {
+  imageUrl: string;
+  imageKey: string;
+  onChangeUrl: (url: string) => void;
+  onChangeKey: (key: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || `Upload failed (${res.status})`);
+      }
+      onChangeUrl(data.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Failed to upload file");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const previewSrc = imageUrl?.trim() ? imageUrl.trim() : (PRESET_IMAGE_MAP[imageKey] ?? projectBanking.src);
+  const hasCustomUrl = Boolean(imageUrl?.trim());
+
+  return (
+    <div className="lg:col-span-3 rounded-lg border border-border/80 dark:border-zinc-800 bg-background/50 dark:bg-[#0c0c0e]/70 p-4 space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/40 dark:border-zinc-800 pb-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-300 flex items-center gap-2">
+          Project Visual & Image Source
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${hasCustomUrl ? "bg-brand/20 text-brand font-bold" : "bg-zinc-800 text-zinc-400"}`}>
+            {hasCustomUrl ? "CUSTOM IMAGE" : `PRESET: ${imageKey || "banking"}`}
+          </span>
+        </span>
+        {hasCustomUrl && (
+          <button
+            type="button"
+            onClick={() => onChangeUrl("")}
+            className="text-[10px] text-amber-500 hover:text-amber-400 hover:underline uppercase tracking-wider cursor-pointer"
+          >
+            Reset to preset image
+          </button>
+        )}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-12 items-start">
+        {/* Preview Thumbnail */}
+        <div className="sm:col-span-4 lg:col-span-3">
+          <div className="relative aspect-video rounded-md border border-border/80 dark:border-zinc-700 overflow-hidden bg-black/40 shadow-inner group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewSrc}
+              alt="Project visual preview"
+              className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = projectBanking.src;
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute bottom-1.5 left-2 text-[9px] font-mono font-bold text-white/90">
+              PREVIEW
+            </div>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="sm:col-span-8 lg:col-span-9 space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {/* Preset Key Selector */}
+            <label className="block space-y-1.5">
+              <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
+                Preset Image Key
+              </span>
+              <select
+                value={imageKey || "banking"}
+                onChange={(e) => onChangeKey(e.target.value)}
+                className="w-full rounded-md border border-border/90 dark:border-zinc-700/80 bg-background dark:bg-[#0c0c0e] px-3.5 py-2 text-sm text-foreground focus:border-brand focus:ring-1 focus:ring-brand/40 outline-none transition-all shadow-inner"
+              >
+                {PRESET_IMAGE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {/* Upload Button */}
+            <div className="space-y-1.5">
+              <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
+                Upload New Image File
+              </span>
+              <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,image/avif"
+                  onChange={(e) => void handleFileChange(e)}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-md border border-brand/60 bg-brand/10 hover:bg-brand hover:text-brand-foreground px-4 py-2 text-xs font-bold uppercase tracking-wider text-brand transition-all shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploading ? (
+                    <>
+                      <span className="size-2 rounded-full bg-brand animate-ping" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>↑ Upload Image File</>
+                  )}
+                </button>
+                <span className="text-[10px] text-muted-foreground">PNG, JPG, WebP up to 10MB</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Custom Image URL field */}
+          <label className="block space-y-1.5">
+            <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
+              Image URL / Path (or auto-populated upon upload)
+            </span>
+            <input
+              type="text"
+              placeholder="https://... or /uploads/projects/..."
+              value={imageUrl || ""}
+              onChange={(e) => onChangeUrl(e.target.value)}
+              className="w-full rounded-md border border-border/90 dark:border-zinc-700/80 bg-background dark:bg-[#0c0c0e] px-3.5 py-2 text-sm font-mono text-foreground placeholder:text-muted/50 focus:border-brand focus:ring-1 focus:ring-brand/40 outline-none transition-all shadow-inner"
+            />
+          </label>
+
+          {uploadError && (
+            <p className="text-xs text-destructive font-mono">⚠️ {uploadError}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProjectsSection({
   data,
   set,
@@ -236,6 +413,7 @@ function ProjectsSection({
                 year: String(new Date().getFullYear()),
                 blurb: "Project summary",
                 imageKey: "banking",
+                imageUrl: "",
                 tags: ["OutSystems"],
                 link: "",
                 featured: true,
@@ -247,20 +425,44 @@ function ProjectsSection({
       />
       {data.projects.map((proj, idx) => (
         <article key={proj.id} className="grid gap-4 rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-6 shadow-sm lg:grid-cols-3">
+          <div className="flex items-center justify-between lg:col-span-3 border-b border-border/40 dark:border-zinc-800 pb-3">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-mono font-bold text-brand uppercase tracking-wider">Project #{idx + 1}</span>
+              <label className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground dark:text-zinc-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={proj.featured ?? false}
+                  onChange={(e) =>
+                    set((d) => ({
+                      ...d,
+                      projects: d.projects.map((p) => p.id === proj.id ? { ...p, featured: e.target.checked } : p),
+                    }))
+                  }
+                />
+                Featured
+              </label>
+            </div>
+            <BtnRemove onClick={() => set((d) => ({ ...d, projects: d.projects.filter((p) => p.id !== proj.id) }))} />
+          </div>
+
           <F label="Code" value={proj.code} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, code: v } : p) }))} />
           <F label="Title" value={proj.title} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, title: v } : p) }))} />
           <F label="Client" value={proj.client} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, client: v } : p) }))} />
           <F label="Year" value={proj.year} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, year: v } : p) }))} />
-          <F label="Image key (banking/devtools/bentley/fnol)" value={proj.imageKey} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, imageKey: v } : p) }))} />
+          <F label="Project Link / URL" value={proj.link ?? ""} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, link: v } : p) }))} />
           <F label="Sort order" type="number" value={proj.sortOrder} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, sortOrder: Number(v) } : p) }))} />
+
+          <ProjectImageManager
+            imageUrl={proj.imageUrl ?? ""}
+            imageKey={proj.imageKey ?? "banking"}
+            onChangeUrl={(url) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, imageUrl: url } : p) }))}
+            onChangeKey={(key) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, imageKey: key } : p) }))}
+          />
+
           <div className="lg:col-span-2">
             <T label="Blurb" value={proj.blurb} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, blurb: v } : p) }))} />
           </div>
           <T label="Tags (comma separated)" value={proj.tags.join(", ")} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, tags: splitCsv(v) } : p) }))} />
-          <div className="flex items-center justify-between lg:col-span-3">
-            <span className="text-xs text-muted">Project #{idx + 1}</span>
-            <BtnRemove onClick={() => set((d) => ({ ...d, projects: d.projects.filter((p) => p.id !== proj.id) }))} />
-          </div>
         </article>
       ))}
     </div>
@@ -709,13 +911,6 @@ export default function PortfolioFormEditor() {
           </div>
         </div>
         <div className="flex items-center gap-2.5">
-          <Link
-            href="/"
-            target="_blank"
-            className="rounded-md border border-border/90 dark:border-zinc-700 bg-surface/60 dark:bg-[#18181c] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground hover:border-brand hover:text-brand transition-all cursor-pointer"
-          >
-            Preview Site ↗
-          </Link>
           <button
             type="button"
             onClick={() => void save()}

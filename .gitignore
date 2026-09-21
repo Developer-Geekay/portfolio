@@ -49,3 +49,7 @@ release/
 # assistant build artifact — regenerate with npm run build:assistant
 tsconfig.tsbuildinfo
 notes.md
+
+# Public uploads
+public/uploads/*
+!public/uploads/.gitkeep
