@@ -23,7 +23,7 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid password.");
     } else {
-      router.push("/admin");
+      router.push("/admin/portfolio");
     }
   }
 
@@ -31,28 +31,30 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background text-foreground font-mono flex items-center justify-center px-4">
       <AdminAccent />
       <div className="w-full max-w-sm">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="size-3 rounded-full bg-brand glow-sm" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="size-3 rounded-full bg-brand glow-sm animate-glow-pulse" />
           <span className="text-brand text-sm font-bold tracking-widest">&gt;_ ADMIN_ACCESS</span>
         </div>
 
-        <div className="border border-brand/20 bg-surface/20 rounded-lg overflow-hidden">
-          <div className="bg-surface px-4 py-2 border-b border-border flex items-center gap-2">
+        <div className="border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] rounded-xl shadow-2xl overflow-hidden">
+          <div className="bg-surface/80 dark:bg-[#18181d] px-4 py-2.5 border-b border-border/80 dark:border-zinc-800 flex items-center gap-2">
             <div className="size-2 rounded-full bg-border" />
             <div className="size-2 rounded-full bg-border" />
             <div className="size-2 rounded-full bg-border" />
-            <span className="text-[10px] text-muted ml-2 uppercase tracking-widest">auth — credential_check</span>
+            <span className="text-[10px] text-muted-foreground dark:text-zinc-400 ml-2 uppercase tracking-widest font-semibold">
+              auth — credential_check
+            </span>
           </div>
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-muted mb-2">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-300 mb-2">
                 Admin Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-surface border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
+                className="w-full rounded-md bg-background dark:bg-[#0c0c0e] border border-border/90 dark:border-zinc-700 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/40 transition-all shadow-inner"
                 placeholder="••••••••"
                 required
                 autoFocus
@@ -60,13 +62,13 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-xs text-destructive tracking-widest">{error}</p>
+              <p className="text-xs text-destructive tracking-widest font-semibold">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-brand text-brand-foreground px-4 py-2.5 text-xs font-bold tracking-widest uppercase hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full rounded-md bg-brand text-brand-foreground px-4 py-2.5 text-xs font-bold tracking-widest uppercase hover:brightness-110 active:scale-95 shadow-glow-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               {loading ? "AUTHENTICATING..." : "AUTHENTICATE →"}
             </button>

@@ -53,13 +53,13 @@ function F({
   type?: string;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-[10px] uppercase tracking-widest text-muted">{label}</span>
+    <label className="block space-y-1.5">
+      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-300">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-brand"
+        className="w-full rounded-md border border-border/90 dark:border-zinc-700/80 bg-background dark:bg-[#0c0c0e] px-3.5 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-brand focus:ring-1 focus:ring-brand/40 outline-none transition-all shadow-inner"
       />
     </label>
   );
@@ -77,27 +77,30 @@ function T({
   rows?: number;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-[10px] uppercase tracking-widest text-muted">{label}</span>
+    <label className="block space-y-1.5">
+      <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-zinc-300">{label}</span>
       <textarea
         value={value}
         rows={rows}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full resize-y border border-border bg-background px-3 py-2 text-sm leading-relaxed text-foreground outline-none focus:border-brand"
+        className="w-full resize-y rounded-md border border-border/90 dark:border-zinc-700/80 bg-background dark:bg-[#0c0c0e] px-3.5 py-2 text-sm leading-relaxed text-foreground placeholder:text-muted/60 focus:border-brand focus:ring-1 focus:ring-brand/40 outline-none transition-all shadow-inner"
       />
     </label>
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
+function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="space-y-4 border border-border bg-surface/20 p-5">{children}</div>
+    <div className={`space-y-4 rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-6 shadow-sm transition-colors ${className}`}>{children}</div>
   );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-sm font-bold uppercase tracking-widest text-brand">{children}</h2>
+    <h2 className="text-sm font-bold uppercase tracking-wider text-brand flex items-center gap-2 pb-2 border-b border-border/40 dark:border-zinc-800 mb-4">
+      <span className="size-1.5 rounded-full bg-brand animate-glow-pulse" />
+      {children}
+    </h2>
   );
 }
 
@@ -106,9 +109,9 @@ function BtnAdd({ label, onClick }: { label: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="border border-brand/40 px-4 py-2 text-xs uppercase tracking-widest text-brand hover:bg-brand hover:text-brand-foreground transition-colors"
+      className="inline-flex items-center gap-1.5 rounded-md border border-brand/50 bg-brand/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand hover:bg-brand hover:text-brand-foreground transition-all shadow-sm cursor-pointer"
     >
-      {label}
+      + {label}
     </button>
   );
 }
@@ -118,9 +121,9 @@ function BtnRemove({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="text-xs uppercase tracking-widest text-destructive/70 hover:text-destructive transition-colors"
+      className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-destructive hover:bg-destructive hover:text-white transition-all cursor-pointer"
     >
-      Remove
+      ✕ Remove
     </button>
   );
 }
@@ -243,7 +246,7 @@ function ProjectsSection({
         }
       />
       {data.projects.map((proj, idx) => (
-        <article key={proj.id} className="grid gap-4 border border-border bg-surface/20 p-5 lg:grid-cols-3">
+        <article key={proj.id} className="grid gap-4 rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-6 shadow-sm lg:grid-cols-3">
           <F label="Code" value={proj.code} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, code: v } : p) }))} />
           <F label="Title" value={proj.title} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, title: v } : p) }))} />
           <F label="Client" value={proj.client} onChange={(v) => set((d) => ({ ...d, projects: d.projects.map((p) => p.id === proj.id ? { ...p, client: v } : p) }))} />
@@ -295,7 +298,7 @@ function ExperienceSection({
         }
       />
       {data.experience.map((exp) => (
-        <article key={exp.id} className="grid gap-4 border border-border bg-surface/20 p-5 lg:grid-cols-3">
+        <article key={exp.id} className="grid gap-4 rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-6 shadow-sm lg:grid-cols-3">
           <F label="ID" value={exp.id} onChange={(v) => set((d) => ({ ...d, experience: d.experience.map((e) => e.id === exp.id ? { ...e, id: v } : e) }))} />
           <F label="Role" value={exp.role} onChange={(v) => set((d) => ({ ...d, experience: d.experience.map((e) => e.id === exp.id ? { ...e, role: v } : e) }))} />
           <F label="Company" value={exp.company} onChange={(v) => set((d) => ({ ...d, experience: d.experience.map((e) => e.id === exp.id ? { ...e, company: v } : e) }))} />
@@ -642,13 +645,13 @@ export default function PortfolioFormEditor() {
 
   if (status === "error" && !portfolio) {
     return (
-      <div className="border border-destructive/40 bg-surface/30 p-6 text-center">
-        <p className="mb-2 text-[10px] uppercase tracking-[0.3em] text-destructive">Load Failed</p>
-        <p className="mb-4 text-xs text-muted">{errorMsg || "Could not reach /api/portfolio"}</p>
+      <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-8 text-center shadow-lg">
+        <p className="mb-2 text-xs uppercase tracking-[0.3em] font-bold text-destructive">Load Failed</p>
+        <p className="mb-4 text-xs text-muted-foreground">{errorMsg || "Could not reach /api/portfolio"}</p>
         <button
           type="button"
           onClick={load}
-          className="border border-brand/40 px-4 py-2 text-xs uppercase tracking-widest text-brand hover:bg-brand hover:text-brand-foreground transition-colors"
+          className="rounded-md border border-brand/50 bg-brand/10 px-5 py-2 text-xs font-bold uppercase tracking-widest text-brand hover:bg-brand hover:text-brand-foreground transition-all cursor-pointer"
         >
           Retry
         </button>
@@ -662,36 +665,64 @@ export default function PortfolioFormEditor() {
     status === "saving"
       ? "Saving..."
       : status === "saved"
-        ? "Saved."
+        ? "All changes saved to database."
         : status === "error"
           ? `Error: ${errorMsg}`
           : dirty
-            ? "Unsaved changes"
-            : "All changes saved";
+            ? "Unsaved changes pending"
+            : "Up to date";
 
   return (
     <div className="space-y-6">
       {/* action bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
-        <p className="text-xs text-muted">
-          {portfolio.projects.length} projects · {portfolio.experience.length} roles ·{" "}
-          {portfolio.stack.length} stack groups · {portfolio.certifications.length} certs
-        </p>
-        <div className="flex gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-4 shadow-sm">
+        <div>
+          <p className="text-xs font-medium text-muted-foreground dark:text-zinc-300">
+            {portfolio.projects.length} projects · {portfolio.experience.length} roles ·{" "}
+            {portfolio.stack.length} stack groups · {portfolio.certifications.length} certs
+          </p>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span
+              className={`size-2 rounded-full ${
+                status === "error"
+                  ? "bg-destructive animate-pulse"
+                  : status === "saved"
+                    ? "bg-brand"
+                    : dirty
+                      ? "bg-amber-400 animate-pulse"
+                      : "bg-emerald-500"
+              }`}
+            />
+            <span
+              className={`text-xs font-mono font-medium ${
+                status === "error"
+                  ? "text-destructive"
+                  : status === "saved"
+                    ? "text-brand"
+                    : dirty
+                      ? "text-amber-500 dark:text-amber-400"
+                      : "text-muted-foreground dark:text-zinc-400"
+              }`}
+            >
+              {statusLine}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5">
           <Link
             href="/"
             target="_blank"
-            className="border border-border px-4 py-2 text-xs uppercase tracking-widest text-foreground hover:border-brand hover:text-brand transition-colors"
+            className="rounded-md border border-border/90 dark:border-zinc-700 bg-surface/60 dark:bg-[#18181c] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground hover:border-brand hover:text-brand transition-all cursor-pointer"
           >
-            Preview
+            Preview Site ↗
           </Link>
           <button
             type="button"
             onClick={() => void save()}
             disabled={status === "saving" || !dirty}
-            className="bg-brand px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-foreground hover:opacity-90 disabled:opacity-40 transition-opacity"
+            className="rounded-md bg-brand px-6 py-2 text-xs font-bold uppercase tracking-wider text-brand-foreground hover:brightness-110 active:scale-95 shadow-glow-sm disabled:opacity-40 transition-all cursor-pointer disabled:cursor-not-allowed"
           >
-            {status === "saving" ? "Saving..." : "Save"}
+            {status === "saving" ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
@@ -703,29 +734,16 @@ export default function PortfolioFormEditor() {
             key={s.id}
             type="button"
             onClick={() => setActive(s.id)}
-            className={`border px-3 py-2 text-[11px] uppercase tracking-widest transition-colors ${
+            className={`rounded-md border px-3.5 py-2 text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
               active === s.id
-                ? "border-brand bg-brand/10 text-brand"
-                : "border-border text-muted hover:border-brand/50 hover:text-foreground"
+                ? "border-brand bg-brand text-brand-foreground shadow-sm"
+                : "border-border/80 dark:border-zinc-800 bg-surface/60 dark:bg-[#16161a] text-muted-foreground dark:text-zinc-400 hover:text-foreground hover:border-zinc-600 hover:bg-surface"
             }`}
           >
             {s.label}
           </button>
         ))}
       </div>
-
-      {/* status bar */}
-      <p
-        className={`border px-4 py-2 text-xs ${
-          status === "error"
-            ? "border-destructive/40 text-destructive"
-            : status === "saved"
-              ? "border-brand/30 text-brand"
-              : "border-border text-muted"
-        }`}
-      >
-        {statusLine}
-      </p>
 
       {/* section content */}
       {active === "header"         && <HeaderSection         data={portfolio} set={set} />}

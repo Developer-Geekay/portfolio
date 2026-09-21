@@ -59,14 +59,14 @@
 
 /* ── Dark mode ───────────────────────────────────────────────────────────── */
 .dark {
-  --bg: #0a0a0b;
-  --surface: #141416;
-  --surface-2: #1c1c1f;
-  --fg: #ffffff;
+  --bg: #09090b;
+  --surface: #131316;
+  --surface-2: #1c1c20;
+  --fg: #f4f4f5;
   --brand: #e2ff66;
-  --brand-foreground: #0a0a0b;
-  --muted: #71717a;
-  --border: rgba(255, 255, 255, 0.08);
+  --brand-foreground: #09090b;
+  --muted: #9ca3af;
+  --border: rgba(255, 255, 255, 0.14);
 }
 
 @layer base {

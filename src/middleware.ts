@@ -15,7 +15,7 @@ export default auth((req) => {
   }
 
   if (isLoggedIn && isLoginPath) {
-    return redirectTo("/admin", req);
+    return redirectTo("/admin/portfolio", req);
   }
 });
 

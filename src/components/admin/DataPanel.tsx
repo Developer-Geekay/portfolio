@@ -66,37 +66,40 @@ export default function DataPanel() {
             value: status ? (status.backupExists ? "portfolios_backup" : "NONE") : "…",
           },
         ].map((s) => (
-          <div key={s.label} className="border border-border bg-surface/20 p-5">
-            <p className="text-[10px] uppercase tracking-widest text-muted mb-2">{s.label}</p>
-            <p className="text-sm font-bold text-brand break-all">{s.value}</p>
+          <div key={s.label} className="rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-5 shadow-sm">
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground dark:text-zinc-300 font-semibold mb-2">{s.label}</p>
+            <p className="text-base font-bold text-brand break-all">{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* migration control */}
-      <div className="border border-border bg-surface/20 p-5 space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-brand">Migration</h2>
-        <p className="text-xs leading-relaxed text-muted">
-          Copies the legacy single-document blob (collection <code className="text-brand">portfolios</code>)
+      <div className="rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] p-6 shadow-sm space-y-4">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-brand flex items-center gap-2">
+          <span className="size-1.5 rounded-full bg-brand animate-glow-pulse" />
+          Storage Migration
+        </h2>
+        <p className="text-xs leading-relaxed text-muted-foreground dark:text-zinc-300">
+          Copies the legacy single-document blob (collection <code className="text-brand font-bold">portfolios</code>)
           into the per-section collections. Safe to run repeatedly — it does nothing when the store is
           already populated, and the legacy collection is renamed to{" "}
-          <code className="text-brand">portfolios_backup</code>, never dropped.
+          <code className="text-brand font-bold">portfolios_backup</code>, never dropped.
         </p>
         <button
           type="button"
           onClick={runMigration}
           disabled={busy || !status}
-          className="bg-brand text-brand-foreground px-5 py-2.5 text-xs font-bold tracking-widest uppercase hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="rounded-md bg-brand text-brand-foreground px-5 py-2.5 text-xs font-bold tracking-widest uppercase hover:brightness-110 active:scale-95 shadow-glow-sm transition-all disabled:opacity-50 cursor-pointer"
         >
           {busy ? "MIGRATING..." : "RUN_MIGRATION"}
         </button>
-        {message && <p className="text-xs text-brand tracking-wide">{message}</p>}
-        {error && <p className="text-xs text-destructive tracking-wide">{error}</p>}
+        {message && <p className="text-xs text-brand font-semibold tracking-wide">{message}</p>}
+        {error && <p className="text-xs text-destructive font-semibold tracking-wide">{error}</p>}
       </div>
 
       {/* collection table */}
-      <div className="border border-border bg-surface/20">
-        <div className="grid grid-cols-3 gap-4 border-b border-border px-5 py-3 text-[10px] uppercase tracking-widest text-muted">
+      <div className="rounded-xl border border-border/90 dark:border-zinc-800 bg-surface/90 dark:bg-[#131317] overflow-hidden shadow-sm">
+        <div className="grid grid-cols-3 gap-4 border-b border-border/80 dark:border-zinc-800 bg-surface/60 dark:bg-[#18181d] px-5 py-3 text-[11px] uppercase tracking-wider text-muted-foreground dark:text-zinc-400 font-semibold">
           <span>Section</span>
           <span>Collection</span>
           <span className="text-right">Documents</span>

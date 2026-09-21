@@ -4,10 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const baseLinks = [
-  { href: "/admin", label: "[ DASHBOARD ]", exact: true },
-  { href: "/admin/posts", label: "[ POSTS ]", exact: false },
   { href: "/admin/portfolio", label: "[ PORTFOLIO ]", exact: false },
-  { href: "/admin/analytics", label: "[ ANALYTICS ]", exact: false },
   { href: "/", label: "[ VIEW_SITE ]", exact: true },
 ];
 
@@ -16,17 +13,21 @@ const dataLink = { href: "/admin/data", label: "[ DATA ]", exact: false };
 
 export default function AdminNav({ showData = false }: { showData?: boolean }) {
   const pathname = usePathname();
-  const links = showData ? [...baseLinks.slice(0, 3), dataLink, ...baseLinks.slice(3)] : baseLinks;
+  const links = showData ? [baseLinks[0], dataLink, baseLinks[1]] : baseLinks;
 
   return (
-    <div className="hidden md:flex gap-5 text-[11px] tracking-widest text-muted">
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-mono">
       {links.map(({ href, label, exact }) => {
         const isActive = exact ? pathname === href : pathname.startsWith(href);
         return (
           <Link
             key={href}
             href={href}
-            className={`transition-colors hover:text-brand ${isActive ? "text-brand" : ""}`}
+            className={`px-3 py-1.5 rounded-md transition-all duration-150 tracking-wider text-[11px] sm:text-xs font-semibold ${
+              isActive
+                ? "bg-brand text-brand-foreground shadow-sm"
+                : "text-muted-foreground dark:text-zinc-400 hover:text-foreground hover:bg-surface/80 dark:hover:bg-zinc-800/80 border border-transparent hover:border-border/60"
+            }`}
           >
             {label}
           </Link>

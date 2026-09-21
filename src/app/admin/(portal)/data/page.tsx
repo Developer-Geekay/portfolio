@@ -7,7 +7,7 @@ export default async function AdminDataPage() {
   // Migration is a one-time task — once no legacy blob remains, this page is
   // done. Send direct visits back to the dashboard.
   await dbConnect();
-  if (!(await legacyBlobExists())) redirect("/admin");
+  if (!(await legacyBlobExists())) redirect("/admin/portfolio");
 
   return (
     <div>
