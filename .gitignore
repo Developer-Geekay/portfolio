@@ -39,9 +39,12 @@ data/*.db-wal
 
 # Next.js build output and cache
 .next/
+release/
+
 
 # Claude Code local settings
 .claude/
 
 # assistant build artifact — regenerate with npm run build:assistant
 tsconfig.tsbuildinfo
+notes.md

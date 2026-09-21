@@ -281,3 +281,15 @@ by hand.
 
 Unchanged: `npm run dev`, and for a throwaway local MongoDB
 `npx tsx scripts/dev-mongo.ts` in a separate terminal.
+
+
+
+❯ let work on the portfolio assitant on these idea's
+
+  1. whenever the response contains about a certification show the relavent certification icons like the bubble effect
+  moving bottom to top like fade in and out transition.
+  2. similarly show contact card whenever the conversation has information relevant to reach using this details to reach
+  out gokul.
+  
+
+  claude --resume cfd56df9-5226-4b33-a976-8002e7b3e385

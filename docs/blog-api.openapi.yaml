@@ -1,0 +1,227 @@
+openapi: 3.1.0
+info:
+  title: Portfolio Blog Posts API
+  version: 1.0.0
+  description: >
+    REST API for managing blog posts on gokulakannan.dev. Backed by Next.js
+    App Router route handlers in src/app/api/posts/ and MongoDB.
+servers:
+  - url: https://gokulakannan.dev
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      description: >
+        Bearer token matching the API_SECRET_KEY environment variable.
+        Generate with `openssl rand -hex 32`.
+  schemas:
+    PostFrontmatter:
+      type: object
+      required: [title]
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,100}$'
+          example: hello-world
+        title:
+          type: string
+          example: Hello World
+        date:
+          type: string
+          example: '2026-07-29'
+        tags:
+          type: array
+          items:
+            type: string
+          default: []
+        excerpt:
+          type: string
+          default: ''
+        published:
+          type: boolean
+          default: false
+    Post:
+      allOf:
+        - $ref: '#/components/schemas/PostFrontmatter'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Markdown body
+    PostInput:
+      allOf:
+        - $ref: '#/components/schemas/PostFrontmatter'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Markdown body
+              default: ''
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /api/posts:
+    get:
+      summary: List posts
+      description: >
+        Returns post metadata (no content), newest first. Public callers see
+        only published posts; authenticated callers also see drafts.
+      security:
+        - {}
+        - apiKey: []
+      responses:
+        '200':
+          description: Array of post frontmatter
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostFrontmatter'
+    post:
+      summary: Create or update (upsert) a post
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  slug:
+                    type: string
+        '400':
+          description: Missing slug/title or invalid slug format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '500':
+          description: Save failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /api/posts/{slug}:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,100}$'
+    get:
+      summary: Fetch a single post
+      description: >
+        Returns the full post including content. Drafts return 404 unless the
+        request is authenticated.
+      security:
+        - {}
+        - apiKey: []
+      responses:
+        '200':
+          description: The post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+    put:
+      summary: Update (upsert) a post
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  slug:
+                    type: string
+        '400':
+          description: Invalid slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '500':
+          description: Save failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+    delete:
+      summary: Delete a post
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+        '400':
+          description: Invalid slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'

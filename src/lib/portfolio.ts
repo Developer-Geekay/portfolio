@@ -16,7 +16,7 @@ export async function getPortfolio(): Promise<PortfolioPageData> {
     // empty store — migrate the legacy single-document blob if one exists
     const migrated = await migrateLegacyPortfolioIfNeeded();
     if (migrated) assembled = await readPortfolioSections();
-    if (!assembled) throw new Error("Portfolio data not found. Run: npm run db:seed");
+    if (!assembled) throw new Error("Portfolio data not found. Run: db:seed");
   }
 
   const data = portfolioPageDataSchema.parse(assembled);

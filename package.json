@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "db:seed": "NODE_OPTIONS='--experimental-sqlite' tsx scripts/seed-db.ts",
-    "build:assistant": "./scripts/build-assistant.sh"
+    "build:assistant": "./scripts/build-assistant.sh",
+    "after_prepare": "node scripts/after_prepare.js"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",

@@ -3,6 +3,7 @@ import { JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Analytics from "@/components/Analytics";
+import ConsoleApiAnalytics from "@/components/ConsoleApiAnalytics";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -28,7 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>{children}</ThemeProvider>
         <Analytics />
+        <ConsoleApiAnalytics />
       </body>
     </html>
   );
 }
+

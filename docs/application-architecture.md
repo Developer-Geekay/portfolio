@@ -119,7 +119,6 @@ src/lib/shared/portfolio.types.ts
 src/lib/server/db/
   client.server.ts
   schema.server.ts
-  seed.server.ts
 
 src/lib/server/repositories/
   portfolio.repository.server.ts

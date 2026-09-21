@@ -1,112 +1,73 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const rootDir = path.join(__dirname, '..');
-const distBrowserDir = path.join(rootDir, 'dist', 'browser');
+const standaloneDir = path.join(rootDir, '.next', 'standalone');
+const nextStaticDir = path.join(rootDir, '.next', 'static');
 const publicDir = path.join(rootDir, 'public');
-const modelsDir = path.join(rootDir, 'models');
-const serverJsFile = path.join(rootDir, 'server.js');
-const packageJsonFile = path.join(rootDir, 'package.json');
-const nodeModulesDir = path.join(rootDir, 'node_modules');
 const releaseDir = path.join(rootDir, 'release');
 
 console.log('🚀 Executing post-build release packaging (after_prepare.js)...');
 
-// Helper to resolve only true production runtime dependencies for server.js
-const SERVER_RUNTIME_PACKAGES = ['express', 'mongoose', 'cors', 'cookie-parser', 'dotenv', 'geoip-lite'];
-
-function getTransitiveDependencies(packageNames, baseNodeModulesDir) {
-  const required = new Set();
-  const queue = [...packageNames];
-
-  while (queue.length > 0) {
-    const pkg = queue.pop();
-    if (!pkg || required.has(pkg)) continue;
-
-    const pkgJsonPath = path.join(baseNodeModulesDir, pkg, 'package.json');
-    if (fs.existsSync(pkgJsonPath)) {
-      required.add(pkg);
-      try {
-        const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-        if (pkgJson.dependencies) {
-          for (const dep of Object.keys(pkgJson.dependencies)) {
-            if (!required.has(dep)) {
-              queue.push(dep);
-            }
-          }
-        }
-      } catch (e) {}
-    }
-  }
-  return Array.from(required);
-}
-
 try {
-  // 1. Re-create clean release directory
+  // 1. Ensure Next.js standalone build exists
+  if (!fs.existsSync(standaloneDir)) {
+    throw new Error(
+      'Standalone build directory (.next/standalone) not found.\n' +
+      'Please run "npm run build" first to generate the Next.js standalone build.'
+    );
+  }
+
+  // 2. Clean & recreate release directory
   if (fs.existsSync(releaseDir)) {
     fs.rmSync(releaseDir, { recursive: true, force: true });
     console.log('🧹 Cleaned existing release directory.');
   }
   fs.mkdirSync(releaseDir, { recursive: true });
 
-  // 2. Copy all files & folders INSIDE dist/browser directly into release/ (FLATTENED)
-  if (fs.existsSync(distBrowserDir)) {
-    fs.cpSync(distBrowserDir, releaseDir, { recursive: true });
-    console.log('📦 Copied all files & folders from dist/browser directly into release/ root');
+  // 3. Copy standalone server, manifests, and pruned node_modules to release/
+  console.log('📦 Copying Next.js standalone output to release/...');
+  fs.cpSync(standaloneDir, releaseDir, { recursive: true });
+
+  // 4. Next.js standalone requires .next/static inside both .next/standalone/.next/static and release/.next/static
+  if (fs.existsSync(nextStaticDir)) {
+    const standaloneStatic = path.join(standaloneDir, '.next', 'static');
+    const releaseStatic = path.join(releaseDir, '.next', 'static');
+
+    fs.mkdirSync(standaloneStatic, { recursive: true });
+    fs.cpSync(nextStaticDir, standaloneStatic, { recursive: true });
+
+    fs.mkdirSync(releaseStatic, { recursive: true });
+    fs.cpSync(nextStaticDir, releaseStatic, { recursive: true });
+    console.log('📦 Copied .next/static -> release/.next/static and .next/standalone/.next/static');
   } else {
-    console.warn('⚠️ Warning: dist/browser not found.');
+    console.warn('⚠️ Warning: .next/static directory not found.');
   }
 
-  // 3. Copy public static assets directly into release/
+  // 5. Next.js standalone requires public/ inside both .next/standalone/public and release/public
   if (fs.existsSync(publicDir)) {
-    fs.cpSync(publicDir, releaseDir, { recursive: true });
-    console.log('📦 Copied public static assets (sdk, icons) directly into release/ root');
-  }
+    const standalonePublic = path.join(standaloneDir, 'public');
+    const releasePublic = path.join(releaseDir, 'public');
 
-  // 4. Copy Mongoose data models -> release/models
-  if (fs.existsSync(modelsDir)) {
-    const releaseModels = path.join(releaseDir, 'models');
-    fs.mkdirSync(releaseModels, { recursive: true });
-    fs.cpSync(modelsDir, releaseModels, { recursive: true });
-    console.log('📦 Copied Mongoose models -> release/models');
-  }
+    fs.mkdirSync(standalonePublic, { recursive: true });
+    fs.cpSync(publicDir, standalonePublic, { recursive: true });
 
-  // 5. Copy server.js -> release/server.js
-  if (fs.existsSync(serverJsFile)) {
-    fs.copyFileSync(serverJsFile, path.join(releaseDir, 'server.js'));
-    console.log('📦 Copied server.js -> release/server.js');
-  }
-
-  // 6. Copy package.json -> release/package.json
-  if (fs.existsSync(packageJsonFile)) {
-    fs.copyFileSync(packageJsonFile, path.join(releaseDir, 'package.json'));
-    console.log('📦 Copied package.json -> release/package.json');
-  }
-
-  // 7. Copy ONLY production server runtime node_modules into release/node_modules
-  if (fs.existsSync(nodeModulesDir)) {
-    const releaseNodeModules = path.join(releaseDir, 'node_modules');
-    fs.mkdirSync(releaseNodeModules, { recursive: true });
-
-    console.log('🔍 Analyzing production runtime dependencies for server.js...');
-    const runtimePackages = getTransitiveDependencies(SERVER_RUNTIME_PACKAGES, nodeModulesDir);
-    console.log(`📦 Pruned ${runtimePackages.length} production runtime packages (excluding build devDependencies like Angular CLI / TypeScript).`);
-
-    for (const pkg of runtimePackages) {
-      const srcPkgDir = path.join(nodeModulesDir, pkg);
-      const destPkgDir = path.join(releaseNodeModules, pkg);
-      if (fs.existsSync(srcPkgDir)) {
-        fs.mkdirSync(path.dirname(destPkgDir), { recursive: true });
-        fs.cpSync(srcPkgDir, destPkgDir, { recursive: true, dereference: true });
-      }
-    }
-
-    console.log('✅ Successfully packaged lightweight production node_modules into release/node_modules');
+    fs.mkdirSync(releasePublic, { recursive: true });
+    fs.cpSync(publicDir, releasePublic, { recursive: true });
+    console.log('📦 Copied public/ -> release/public and .next/standalone/public');
   } else {
-    console.warn('⚠️ Warning: node_modules directory not found.');
+    console.warn('⚠️ Warning: public/ directory not found.');
   }
 
-  console.log('✨ Lightweight production deployment release package successfully created in "/release"!');
+  console.log('\n✨ Production release package successfully created in:');
+  console.log(`   📁 release/          (${path.relative(rootDir, releaseDir)})`);
+  console.log(`   📁 .next/standalone/ (${path.relative(rootDir, standaloneDir)})`);
+  console.log('\n🚀 Ready to run in production with:');
+  console.log('   cd release && node server.js');
 } catch (error) {
   console.error('❌ Error during release packaging:', error.message);
   process.exit(1);
