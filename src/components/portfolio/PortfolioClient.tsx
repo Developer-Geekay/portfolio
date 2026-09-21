@@ -865,7 +865,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                 rel="noopener noreferrer"
                 className="hover:text-brand transition-colors duration-200"
               >
-                {portfolio.uiText.navLabels.logs}
+                {portfolio.uiText.navLabels.logs === "[ 03_LOGS ]" ? "[ 04_LOGS ]" : (portfolio.uiText.navLabels.logs || "[ 04_LOGS ]")}
               </a>
               <a href="#connect" className={navCls("connect")}>{portfolio.uiText.navLabels.connect}</a>
             </div>
@@ -911,7 +911,7 @@ export default function PortfolioClient({ portfolio }: { portfolio: PortfolioPag
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:text-brand transition-colors duration-200"
               >
-                {portfolio.uiText.navLabels.logs || "[ 04_LOGS ]"}
+                {portfolio.uiText.navLabels.logs === "[ 03_LOGS ]" ? "[ 04_LOGS ]" : (portfolio.uiText.navLabels.logs || "[ 04_LOGS ]")}
               </a>
               <a href="#connect" onClick={() => setMobileMenuOpen(false)} className={navCls("connect")}>{portfolio.uiText.navLabels.connect || "[ 05_CONNECT ]"}</a>
             </div>

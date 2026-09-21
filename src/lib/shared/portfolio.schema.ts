@@ -194,6 +194,12 @@ export const uiTextSchema = z.object({
       blog: z.string().optional(),
       connect: z.string().min(1).default("[ 05_CONNECT ]"),
     })
+    .transform((val) => {
+      if (val.logs === "[ 03_LOGS ]") {
+        val.logs = "[ 04_LOGS ]";
+      }
+      return val;
+    })
     .default(UI_TEXT_DEFAULTS.navLabels),
   sectionTitles: z
     .object({

@@ -18,9 +18,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Gokula Kannan - Technical Architect | OutSystems",
+  title: "Gokula Kannan - Technical Lead | OutSystems",
   description:
-    "Technical Architect with 8+ years across banking, fintech and insurance. 5x OutSystems certified. Based in Riyadh, Saudi Arabia.",
+    "Technical Lead with 10+ years across banking, finance and enterprise solutions. 5x OutSystems certified. Based in Riyadh, Saudi Arabia.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

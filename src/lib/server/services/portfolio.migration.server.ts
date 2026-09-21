@@ -1,7 +1,9 @@
+import fs from "node:fs";
+import path from "node:path";
 import mongoose from "mongoose";
 import { portfolioPageDataSchema } from "../../shared/portfolio.schema";
 import { writePortfolio } from "../../db/portfolio-store";
-import { PortfolioProfile } from "../../db/schema";
+import { PortfolioProfile, PortfolioUiText } from "../../db/schema";
 
 const LEGACY_COLLECTION = "portfolios";
 const BACKUP_COLLECTION = "portfolios_backup";
@@ -49,4 +51,37 @@ export async function migrateLegacyPortfolioIfNeeded(): Promise<boolean> {
     console.warn("[portfolio] legacy collection rename failed (non-fatal):", err);
   }
   return true;
+}
+
+// Automatically syncs the updated resume and fixes legacy nav sequence in MongoDB
+// if the store is still holding the pre-update content (e.g. 8 years exp or [ 03_LOGS ]).
+export async function syncResumeUpdateIfNeeded(): Promise<boolean> {
+  const db = mongoose.connection.db;
+  if (!db) return false;
+
+  try {
+    const [profile, uiText] = await Promise.all([
+      PortfolioProfile.findOne().lean(),
+      PortfolioUiText.findOne().lean(),
+    ]);
+
+    const isLegacyProfile = profile?.stats?.some(
+      (s: { label: string; value: number }) => s.label === "Years_Exp" && s.value < 10
+    );
+    const isLegacyNav = (uiText as { navLabels?: { logs?: string } } | null)?.navLabels?.logs === "[ 03_LOGS ]";
+
+    if (isLegacyProfile || isLegacyNav) {
+      const JSON_PATH = path.join(process.cwd(), "data", "portfolio.json");
+      if (fs.existsSync(JSON_PATH)) {
+        const raw = JSON.parse(fs.readFileSync(JSON_PATH, "utf8"));
+        await writePortfolio(portfolioPageDataSchema.parse(raw));
+        console.log("[portfolio] Synced latest resume content and corrected nav sequence in MongoDB");
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn("[portfolio] syncResumeUpdateIfNeeded non-fatal warning:", err);
+  }
+
+  return false;
 }

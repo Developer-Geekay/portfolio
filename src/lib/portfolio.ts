@@ -1,6 +1,6 @@
 import { dbConnect } from "./db/client";
 import { readPortfolioSections, writePortfolio, LIST_SECTIONS } from "./db/portfolio-store";
-import { migrateLegacyPortfolioIfNeeded } from "./server/services/portfolio.migration.server";
+import { migrateLegacyPortfolioIfNeeded, syncResumeUpdateIfNeeded } from "./server/services/portfolio.migration.server";
 import { portfolioPageDataSchema, type PortfolioPageData } from "./shared/portfolio.schema";
 
 function safeSort<T extends { sortOrder?: number }>(arr: T[]): T[] {
@@ -17,6 +17,10 @@ export async function getPortfolio(): Promise<PortfolioPageData> {
     const migrated = await migrateLegacyPortfolioIfNeeded();
     if (migrated) assembled = await readPortfolioSections();
     if (!assembled) throw new Error("Portfolio data not found. Run: db:seed");
+  } else {
+    // Check if store still holds legacy resume content or incorrect nav sequence
+    const synced = await syncResumeUpdateIfNeeded();
+    if (synced) assembled = await readPortfolioSections();
   }
 
   const data = portfolioPageDataSchema.parse(assembled);

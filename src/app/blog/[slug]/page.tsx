@@ -134,7 +134,7 @@ export default async function BlogPostPage({
           <div>
             <p className="text-[11px] text-muted tracking-widest uppercase mb-1">Written by</p>
             <p className="text-sm font-bold">Gokula Kannan</p>
-            <p className="text-xs text-brand/80 tracking-widest mt-0.5">Technical Architect · OutSystems</p>
+            <p className="text-xs text-brand/80 tracking-widest mt-0.5">Technical Lead · OutSystems</p>
           </div>
           <Link
             href="/blog"
