@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const ASSISTANT_URL =
-  process.env.NEXT_PUBLIC_ASSISTANT_URL || "https://assitant.gokulakannan.dev";
+  process.env.NEXT_PUBLIC_ASSISTANT_URL || "https://assistant.gokulakannan.dev";
 const isExternal = /^https?:\/\//i.test(ASSISTANT_URL);
 const DISMISS_KEY = "assistant_popup_dismissed";
 
